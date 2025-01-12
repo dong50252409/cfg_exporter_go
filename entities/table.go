@@ -12,7 +12,7 @@ type Table struct {
 	// 装饰器
 	Decorators map[string]any
 	// 主体数据
-	DataSet []any
+	DataSet [][]any
 }
 
 type Field struct {

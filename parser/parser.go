@@ -2,8 +2,9 @@ package parser
 
 import (
 	"cfg_exporter/entities"
-	"cfg_exporter/entities/base_type"
 	"cfg_exporter/entities/decorator"
+	"cfg_exporter/entities/typesystem"
+	"cfg_exporter/interfaces"
 	"cfg_exporter/reader"
 	"fmt"
 	"path/filepath"
@@ -91,6 +92,8 @@ func parser(tbl *entities.Table, records [][]string) error {
 	}
 	tbl.Fields = fields
 	tbl.DataSet = dataSet
+
+	runDecorator(tbl)
 	return nil
 }
 
@@ -105,7 +108,7 @@ func parseFiledName(field *entities.Field, val string) {
 func parseFieldType(field *entities.Field, val string) error {
 	val = strings.TrimSpace(val)
 	if val != "" {
-		t, err := base_type.New(val)
+		t, err := typesystem.New(val)
 		if err != nil {
 			return fmt.Errorf("字段：%s 类型：%s %s", field.Name, val, err)
 		}
@@ -130,7 +133,7 @@ func parseFieldDecorator(tbl *entities.Table, field *entities.Field, val string)
 	if val != "" {
 		parts := splitMultiConsRegexp.Split(val, -1)
 		for _, part := range parts {
-			err := decorator.Parse(tbl, field, part)
+			err := decorator.New(tbl, field, part)
 			if err != nil {
 				return fmt.Errorf("字段：%s 装饰器：%s %s", field.Name, part, err)
 			}
@@ -147,14 +150,26 @@ func parseRow(field *entities.Field, dataSet []any, records [][]string) error {
 			value = nil
 		} else {
 			ceil := recordRows[field.Column]
-			value, err = field.Type.(base_type.TypeParser).ParseFromString(ceil)
+			value, err = field.Type.(interfaces.ITypeSystem).ParseString(ceil)
 			if err != nil {
-				return fmt.Errorf("行:%d 列：%d 字段:%s 错误:%s", rowIndex+5, field.Column+1, field.Name, err)
+				return fmt.Errorf("字段:%s 行:%d 列：%d 错误:%s", field.Name, rowIndex+5, field.Column+1, err)
 			}
 		}
 		rows := dataSet[rowIndex].([]any)
 		rows = append(rows, value)
 		dataSet[rowIndex] = rows
+	}
+	return nil
+}
+
+func runDecorator(tbl *entities.Table) error {
+	for _, field := range tbl.Fields {
+		for k, d := range field.Decorators {
+			err := d.(interfaces.IFieldDecorator).RunFieldDecorator(tbl, field)
+			if err != nil {
+				return fmt.Errorf("字段：%s 装饰器：%s 列：%d %s", field.Name, k, field.Column+1, err)
+			}
+		}
 	}
 	return nil
 }

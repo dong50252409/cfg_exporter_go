@@ -1,6 +1,10 @@
 package decorator
 
-import "cfg_exporter/entities"
+import (
+	"cfg_exporter/config"
+	"cfg_exporter/entities"
+	"fmt"
+)
 
 // PrimaryKey 主键
 type PrimaryKey struct {
@@ -19,6 +23,26 @@ func newPrimaryKey(tbl *entities.Table, field *entities.Field, _ string) error {
 	return nil
 }
 
-func (*PrimaryKey) Check() bool {
-	return true
+func (*PrimaryKey) RunTableDecorator(tbl *entities.Table) error {
+	d, ok := tbl.Decorators["p_key"]
+	if !ok {
+		return fmt.Errorf("配置表主键不存在")
+	}
+
+	var set map[any]struct{}
+	pkDecorator := d.(*PrimaryKey)
+	for rowIndex, row := range tbl.DataSet {
+		var items []any
+		for _, colIndex := range pkDecorator.columnIndies {
+			item := row[colIndex]
+			if item == nil {
+				return fmt.Errorf("第 %d 行 主键不能为空", rowIndex+config.Config.BodyStartRow)
+			}
+			items = append(items, item)
+		}
+		if _, ok := set[items]; ok {
+			return fmt.Errorf("第 %d 行 主键重复 %v", rowIndex+config.Config.BodyStartRow, items)
+		}
+	}
+	return nil
 }

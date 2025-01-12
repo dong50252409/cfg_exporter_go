@@ -1,6 +1,7 @@
-package base_type
+package typesystem
 
 import (
+	"cfg_exporter/interfaces"
 	"fmt"
 	"strconv"
 	"strings"
@@ -233,9 +234,9 @@ func (p *parser) parseList() []any {
 }
 
 // parseTuple 解析元组结构。
-func (p *parser) parseTuple() TupleT {
+func (p *parser) parseTuple() interfaces.TupleT {
 	p.eat(LPAREN)
-	var tuple TupleT
+	var tuple interfaces.TupleT
 	for i := 0; p.currentToken.Type != RPAREN; i++ {
 		if i < len(tuple) {
 			tuple[i] = p.parse()
@@ -250,7 +251,7 @@ func (p *parser) parseTuple() TupleT {
 	return tuple
 }
 
-// parseMap 解析映射结构。
+// parseMap 解析Map结构。
 func (p *parser) parseMap() map[any]any {
 	p.eat(LBRACE)
 	m := make(map[any]any)

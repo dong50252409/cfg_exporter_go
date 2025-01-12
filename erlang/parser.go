@@ -2,7 +2,7 @@ package erlang
 
 import (
 	"cfg_exporter/entities"
-	_ "cfg_exporter/erlang/erl_type"
+	_ "cfg_exporter/erlang/typesystem"
 	"cfg_exporter/parser"
 )
 

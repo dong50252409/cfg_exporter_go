@@ -1,6 +1,10 @@
 package decorator
 
-import "cfg_exporter/entities"
+import (
+	"cfg_exporter/config"
+	"cfg_exporter/entities"
+	"fmt"
+)
 
 type Unique struct {
 }
@@ -14,6 +18,17 @@ func newUnique(_ *entities.Table, field *entities.Field, _ string) error {
 	return nil
 }
 
-func (u *Unique) Check() bool {
-	return true
+func (*Unique) RunFieldDecorator(tbl *entities.Table, field *entities.Field) error {
+	var set map[any]struct{}
+	for rowIndex, row := range tbl.DataSet {
+		v := row[field.Column]
+		if v == nil {
+			return fmt.Errorf("第 %d 行 数值不能为空", rowIndex+config.Config.BodyStartRow)
+		}
+		if _, ok := set[v]; ok {
+			return fmt.Errorf("第 %d 行 数值重复", rowIndex+config.Config.BodyStartRow)
+		}
+		set[v] = struct{}{}
+	}
+	return nil
 }

@@ -1,7 +1,7 @@
-package erl_type
+package typesystem
 
 import (
-	"cfg_exporter/entities/base_type"
+	"cfg_exporter/interfaces"
 	"fmt"
 	"strconv"
 	"strings"
@@ -29,7 +29,7 @@ func toString(data interface{}) string {
 			elements = append(elements, fmt.Sprintf("%s => %s", toString(key), toString(value)))
 		}
 		return "#{" + strings.Join(elements, ", ") + "}"
-	case base_type.TupleT: // 处理数组
+	case interfaces.TupleT: // 处理数组
 		var elements []string
 		for _, item := range v {
 			if item == nil {

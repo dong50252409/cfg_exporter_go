@@ -14,7 +14,7 @@ func register(key string, cls func(tbl *entities.Table, field *entities.Field, s
 	registry[key] = cls
 }
 
-func Parse(tbl *entities.Table, field *entities.Field, str string) error {
+func New(tbl *entities.Table, field *entities.Field, str string) error {
 	key, args := getKey(str)
 	cons, ok := registry[key]
 	if !ok {

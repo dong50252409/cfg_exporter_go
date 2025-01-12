@@ -7,9 +7,9 @@ func SubArgs(str string, sep string) []string {
 	if index != -1 {
 		end := strings.LastIndex(str, ")")
 		if end == -1 {
-			return nil
+			return []string{}
 		}
 		return strings.Split(str[index+1:end], sep)
 	}
-	return nil
+	return []string{}
 }
