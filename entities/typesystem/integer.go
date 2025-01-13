@@ -4,6 +4,7 @@ import (
 	"cfg_exporter/util"
 	"fmt"
 	"maps"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -16,12 +17,12 @@ type Integer struct {
 var intByteSizes = map[string]int{
 	"8":  1,
 	"16": 2,
-	"32": 3,
-	"64": 4,
+	"32": 4,
+	"64": 8,
 }
 
 func NewInteger(typeStr string, DefaultValue string) (*Integer, error) {
-	args := util.SubArgs(typeStr, "")
+	args := util.SubArgs(typeStr, ",")
 	bit := "64"
 	if len(args) == 1 {
 		bit = args[0]
@@ -46,16 +47,16 @@ func (i *Integer) Convert(val any) string {
 
 func (i *Integer) String() string {
 	switch i.ByteSize {
-	case 8:
+	case 1:
 		return "int8"
-	case 16:
+	case 2:
 		return "int16"
-	case 32:
+	case 4:
 		return "int32"
-	case 64:
+	case 8:
 		return "int64"
 	default:
-		return "int"
+		return "int64"
 	}
 }
 
@@ -70,4 +71,19 @@ func (i *Integer) SetDefaultValue(val any) error {
 
 func (i *Integer) GetDefaultValue() string {
 	return i.DefaultValue
+}
+
+func (i *Integer) GetKind() reflect.Kind {
+	switch i.ByteSize {
+	case 1:
+		return reflect.Int8
+	case 2:
+		return reflect.Int16
+	case 4:
+		return reflect.Int32
+	case 8:
+		return reflect.Int64
+	default:
+		return reflect.Int64
+	}
 }

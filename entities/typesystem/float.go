@@ -4,6 +4,7 @@ import (
 	"cfg_exporter/util"
 	"fmt"
 	"maps"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -19,7 +20,7 @@ var floatByteSizes = map[string]int{
 }
 
 func NewFloat(typeStr string, DefaultValue string) (*Float, error) {
-	args := util.SubArgs(typeStr, "")
+	args := util.SubArgs(typeStr, ",")
 	bit := "64"
 	if len(args) == 1 {
 		bit = args[0]
@@ -61,4 +62,11 @@ func (f *Float) SetDefaultValue(val any) error {
 
 func (f *Float) GetDefaultValue() string {
 	return f.DefaultValue
+}
+
+func (f *Float) GetKind() reflect.Kind {
+	if f.ByteSize == 4 {
+		return reflect.Float32
+	}
+	return reflect.Float64
 }

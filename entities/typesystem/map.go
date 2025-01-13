@@ -73,3 +73,7 @@ func (m *Map) SetDefaultValue(val any) error {
 func (m *Map) GetDefaultValue() string {
 	return m.DefaultValue
 }
+
+func (m *Map) GetKind() reflect.Kind {
+	return reflect.Map
+}

@@ -14,7 +14,7 @@ type Tuple struct {
 }
 
 func NewTuple(typeStr string) (*Tuple, error) {
-	args := util.SubArgs(typeStr, "")
+	args := util.SubArgs(typeStr, ",")
 	switch len(args) {
 	case 0:
 		return &Tuple{DefaultValue: "()", ElementKind: reflect.Interface}, nil
@@ -23,7 +23,7 @@ func NewTuple(typeStr string) (*Tuple, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &Tuple{ElementKind: GetTypeKind(t)}, nil
+		return &Tuple{ElementKind: t.(interfaces.ITypeSystem).GetKind()}, nil
 	}
 	return nil, fmt.Errorf("类型格式错误 tuple|tuple(元素类型)")
 }
@@ -31,6 +31,9 @@ func (t *Tuple) ParseString(str string) (any, error) {
 	v, err := ParseString(str)
 	if err != nil {
 		return nil, err
+	}
+	if v == nil {
+		return v, nil
 	}
 	if t.ElementKind != reflect.Interface {
 		for i, e := range v.(interfaces.TupleT) {
@@ -73,4 +76,8 @@ func (t *Tuple) SetDefaultValue(val any) error {
 
 func (t *Tuple) GetDefaultValue() string {
 	return t.DefaultValue
+}
+
+func (*Tuple) GetKind() reflect.Kind {
+	return reflect.Array
 }

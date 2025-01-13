@@ -9,8 +9,8 @@ import (
 
 // ForeignKey 外键引用
 type ForeignKey struct {
-	tableName string
-	fieldName string
+	TableName string
+	FieldName string
 }
 
 func init() {
@@ -22,14 +22,18 @@ func newForeignKey(_ *entities.Table, field *entities.Field, str string) error {
 	if len(args) == 2 {
 		l := strings.Split(str, ",")
 		if len(l) == 2 {
-			field.Decorators["f_key"] = &ForeignKey{tableName: l[0], fieldName: l[1]}
+			field.Decorators["f_key"] = &ForeignKey{TableName: l[0], FieldName: l[1]}
 			return nil
 		}
 	}
 	return fmt.Errorf("参数格式错误 f_key(表名,字段名)")
 }
 
+func (f *ForeignKey) Name() string {
+	return "f_key"
+}
+
 func (f *ForeignKey) RunFieldDecorator(tbl *entities.Table, field *entities.Field) error {
-	// TODO
+	// TODO 实现读取外键数据
 	return nil
 }

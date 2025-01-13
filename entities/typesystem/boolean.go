@@ -2,6 +2,7 @@ package typesystem
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 )
 
@@ -37,4 +38,8 @@ func (b *Boolean) SetDefaultValue(val any) error {
 
 func (b *Boolean) GetDefaultValue() string {
 	return b.DefaultValue
+}
+
+func (b *Boolean) GetKind() reflect.Kind {
+	return reflect.Bool
 }

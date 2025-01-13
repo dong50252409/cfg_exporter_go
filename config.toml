@@ -1,7 +1,7 @@
 # cfg-exporter 配置模板
 
 # 配置文件路径
-source = "./samples/"
+source = "./samples/configs"
 # 配置文件支持的格式
 import_extension = ["csv", "xlsx"]
 # 字段描述行号

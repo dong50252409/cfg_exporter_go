@@ -3,9 +3,10 @@ package decorator
 import (
 	"cfg_exporter/config"
 	"cfg_exporter/entities"
-	"cfg_exporter/entities/typesystem"
+	"cfg_exporter/interfaces"
 	"cfg_exporter/util"
 	"fmt"
+	"reflect"
 	"strconv"
 )
 
@@ -22,15 +23,15 @@ func init() {
 func newRange(_ *entities.Table, field *entities.Field, str string) error {
 	args := util.SubArgs(str, ",")
 	if len(args) == 2 {
-		switch field.Type.(type) {
-		case *typesystem.Integer:
-			v1, err1 := strconv.Atoi(args[0])
-			v2, err2 := strconv.Atoi(args[1])
+		switch field.Type.(interfaces.ITypeSystem).GetKind() {
+		case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			v1, err1 := strconv.ParseInt(args[0], 10, 64)
+			v2, err2 := strconv.ParseInt(args[1], 10, 64)
 			if err1 == nil && err2 == nil && v1 <= v2 {
 				field.Decorators["range"] = &Range{minValue: v1, maxValue: v2}
 				return nil
 			}
-		case *typesystem.Float:
+		case reflect.Float32, reflect.Float64:
 			v1, err1 := strconv.ParseFloat(args[0], 64)
 			v2, err2 := strconv.ParseFloat(args[1], 64)
 			if err1 == nil && err2 == nil && v1 <= v2 {
@@ -46,23 +47,30 @@ func newRange(_ *entities.Table, field *entities.Field, str string) error {
 
 func (r *Range) RunFieldDecorator(tbl *entities.Table, field *entities.Field) error {
 	for corIndex, row := range tbl.DataSet {
-		err := r.Equal(corIndex, row[field.Column], field.Type)
-		if err != nil {
-			return err
+		v := row[field.Column]
+		if v != nil {
+			err := r.Equal(corIndex, row[field.Column], field.Type)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
 }
 
+func (*Range) Name() string {
+	return "range"
+}
+
 func (r *Range) Equal(rowIndex int, v any, t any) error {
-	switch t.(type) {
-	case *typesystem.Integer:
-		if !(r.minValue.(int) >= v.(int) && r.maxValue.(int) <= v.(int)) {
+	switch t.(interfaces.ITypeSystem).GetKind() {
+	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		if !(r.minValue.(int64) <= v.(int64) && v.(int64) <= r.maxValue.(int64)) {
 			return fmt.Errorf("第 %d 行 数值必须在%d到%d之间", rowIndex+config.Config.BodyStartRow, r.minValue, r.maxValue)
 		}
 		return nil
-	case *typesystem.Float:
-		if !(r.minValue.(float64) >= v.(float64) && r.maxValue.(float64) <= v.(float64)) {
+	case reflect.Float32, reflect.Float64:
+		if !(r.minValue.(float64) <= v.(float64) && v.(float64) <= r.maxValue.(float64)) {
 			return fmt.Errorf("第 %d 行 数值必须在%d到%d之间", rowIndex+config.Config.BodyStartRow, r.minValue, r.maxValue)
 		}
 		return nil

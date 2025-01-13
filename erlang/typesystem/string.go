@@ -21,12 +21,12 @@ func newString(typeStr string) (any, error) {
 	return &ErlStr{Str: newStr}, nil
 }
 
-func (s *ErlStr) ParseString(typestr string) (any, error) {
+func (s *ErlStr) ParseString(typeStr string) (any, error) {
 	return typeStr, nil
 }
 
-func (s *ErlStr) Convert(val ...any) string {
-	return fmt.Sprintf("<<\"%s\"/utf8>>", val[0])
+func (s *ErlStr) Convert(val any) string {
+	return fmt.Sprintf("<<\"%s\"/utf8>>", val)
 }
 
 func (s *ErlStr) String() string {

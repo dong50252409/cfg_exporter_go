@@ -27,7 +27,7 @@ func New(tbl *entities.Table, field *entities.Field, str string) error {
 func getKey(str string) (string, string) {
 	index := strings.Index(str, "(")
 	if index != -1 {
-		return str[:index], str[index+1:]
+		return str[:index], str[index:]
 	} else {
 		return str, ""
 	}

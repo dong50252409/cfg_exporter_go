@@ -13,7 +13,7 @@ type List struct {
 }
 
 func NewList(typeStr string) (*List, error) {
-	args := util.SubArgs(typeStr, "")
+	args := util.SubArgs(typeStr, ",")
 	switch len(args) {
 	case 0:
 		return &List{DefaultValue: "[]", ElementKind: reflect.Interface}, nil
@@ -64,4 +64,8 @@ func (l *List) SetDefaultValue(val any) error {
 
 func (l *List) GetDefaultValue() string {
 	return l.DefaultValue
+}
+
+func (l *List) GetKind() reflect.Kind {
+	return reflect.Slice
 }

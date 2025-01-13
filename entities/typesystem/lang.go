@@ -1,6 +1,9 @@
 package typesystem
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 type Lang struct {
 	DefaultValue string
@@ -33,4 +36,8 @@ func (l *Lang) SetDefaultValue(val any) error {
 
 func (l *Lang) GetDefaultValue() string {
 	return l.DefaultValue
+}
+
+func (l *Lang) GetKind() reflect.Kind {
+	return reflect.String
 }

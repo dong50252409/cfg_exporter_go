@@ -2,6 +2,7 @@ package typesystem
 
 import (
 	"fmt"
+	"reflect"
 )
 
 type Str struct {
@@ -34,4 +35,8 @@ func (s *Str) SetDefaultValue(val any) error {
 }
 func (s *Str) GetDefaultValue() string {
 	return s.DefaultValue
+}
+
+func (s *Str) GetKind() reflect.Kind {
+	return reflect.String
 }

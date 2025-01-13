@@ -19,10 +19,15 @@ func newNotNull(_ *entities.Table, field *entities.Field, _ string) error {
 	return nil
 }
 
+func (*NotNull) Name() string {
+	return "not_null"
+}
+
 func (*NotNull) RunFieldDecorator(tbl *entities.Table, field *entities.Field) error {
-	_, ok := field.Decorators["default"]
+	_, ok := field.Decorators["not_null"]
 	for rowIndex, row := range tbl.DataSet {
-		if row[field.Column] == nil || !ok {
+		v := row[field.ColIndex]
+		if v == nil || v == "" || !ok {
 			return fmt.Errorf("第 %d 行 数值不能为空", rowIndex+config.Config.BodyStartRow)
 		}
 	}

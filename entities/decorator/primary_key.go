@@ -3,6 +3,7 @@ package decorator
 import (
 	"cfg_exporter/config"
 	"cfg_exporter/entities"
+	"cfg_exporter/interfaces"
 	"fmt"
 )
 
@@ -16,32 +17,40 @@ func init() {
 }
 
 func newPrimaryKey(tbl *entities.Table, field *entities.Field, _ string) error {
-	if v, ok := tbl.Decorators["p_key"]; ok {
-		pk := v.(*PrimaryKey)
-		pk.columnIndies = append(pk.columnIndies, field.ColIndex)
+	var pk *PrimaryKey
+	for _, d := range tbl.Decorators {
+		if d1, ok := d.(*PrimaryKey); ok {
+			pk = d1
+			break
+		}
 	}
+	if pk == nil {
+		pk = &PrimaryKey{}
+		tbl.Decorators = append(tbl.Decorators, pk)
+	}
+	pk.columnIndies = append(pk.columnIndies, field.ColIndex)
 	return nil
 }
 
-func (*PrimaryKey) RunTableDecorator(tbl *entities.Table) error {
-	d, ok := tbl.Decorators["p_key"]
-	if !ok {
-		return fmt.Errorf("配置表主键不存在")
-	}
+func (*PrimaryKey) Name() string {
+	return "p_key"
+}
 
-	var set map[any]struct{}
-	pkDecorator := d.(*PrimaryKey)
+func (pk *PrimaryKey) RunTableDecorator(tbl *entities.Table) error {
+	var set = make(map[interfaces.TupleT]struct{})
 	for rowIndex, row := range tbl.DataSet {
-		var items []any
-		for _, colIndex := range pkDecorator.columnIndies {
+		var items interfaces.TupleT
+		for index, colIndex := range pk.columnIndies {
 			item := row[colIndex]
 			if item == nil {
 				return fmt.Errorf("第 %d 行 主键不能为空", rowIndex+config.Config.BodyStartRow)
 			}
-			items = append(items, item)
+			items[index] = item
 		}
 		if _, ok := set[items]; ok {
 			return fmt.Errorf("第 %d 行 主键重复 %v", rowIndex+config.Config.BodyStartRow, items)
+		} else {
+			set[items] = struct{}{}
 		}
 	}
 	return nil

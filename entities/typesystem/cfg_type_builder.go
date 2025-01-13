@@ -26,7 +26,7 @@ func New(typeStr string) (any, error) {
 func getKey(typeStr string) (string, string) {
 	index := strings.Index(typeStr, "(")
 	if index != -1 {
-		return typeStr[:index], typeStr[index+1:]
+		return typeStr[:index], typeStr[index:]
 	} else {
 		return typeStr, ""
 	}
@@ -36,29 +36,6 @@ func GetTypeKind(t any) reflect.Kind {
 	switch t.(type) {
 	case *Boolean:
 		return reflect.Bool
-	case *Integer:
-		return reflect.Int
-	case *Float:
-		return reflect.Float64
-	case *Str:
-		return reflect.String
-	case *List:
-		return reflect.Slice
-	case *Tuple:
-		return reflect.Array
-	case *Map:
-		return reflect.Map
-	case *Lang:
-		return reflect.String
-	default:
-		return reflect.Interface
-	}
-}
-
-func ConvertToType(v any, t any) {
-	switch t.(type) {
-	case *Boolean:
-		return v.(bool)
 	case *Integer:
 		return reflect.Int
 	case *Float:

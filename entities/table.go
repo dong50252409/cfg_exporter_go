@@ -10,9 +10,11 @@ type Table struct {
 	// 字段
 	Fields []*Field
 	// 装饰器
-	Decorators map[string]any
+	Decorators []any
 	// 主体数据
 	DataSet [][]any
+	// 原始数据
+	Records [][]string
 }
 
 type Field struct {
@@ -28,4 +30,14 @@ type Field struct {
 	Comment string
 	// 装饰器
 	Decorators map[string]any
+}
+
+// GetFieldByName 获取字段
+func (tbl *Table) GetFieldByName(fieldName string) *Field {
+	for _, field := range tbl.Fields {
+		if field.Name == fieldName {
+			return field
+		}
+	}
+	return nil
 }
