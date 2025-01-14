@@ -17,7 +17,7 @@ type Range struct {
 }
 
 func init() {
-	registry["range"] = newRange
+	register("range", newRange)
 }
 
 func newRange(_ *entities.Table, field *entities.Field, str string) error {

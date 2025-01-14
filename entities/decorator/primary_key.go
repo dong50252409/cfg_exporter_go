@@ -9,7 +9,7 @@ import (
 
 // PrimaryKey 主键
 type PrimaryKey struct {
-	columnIndies []int
+	Fields []*entities.Field
 }
 
 func init() {
@@ -28,7 +28,7 @@ func newPrimaryKey(tbl *entities.Table, field *entities.Field, _ string) error {
 		pk = &PrimaryKey{}
 		tbl.Decorators = append(tbl.Decorators, pk)
 	}
-	pk.columnIndies = append(pk.columnIndies, field.ColIndex)
+	pk.Fields = append(pk.Fields, field)
 	return nil
 }
 
@@ -40,8 +40,8 @@ func (pk *PrimaryKey) RunTableDecorator(tbl *entities.Table) error {
 	var set = make(map[interfaces.TupleT]struct{})
 	for rowIndex, row := range tbl.DataSet {
 		var items interfaces.TupleT
-		for index, colIndex := range pk.columnIndies {
-			item := row[colIndex]
+		for index, field := range pk.Fields {
+			item := row[field.ColIndex]
 			if item == nil {
 				return fmt.Errorf("第 %d 行 主键不能为空", rowIndex+config.Config.BodyStartRow)
 			}

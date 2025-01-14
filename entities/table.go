@@ -41,3 +41,24 @@ func (tbl *Table) GetFieldByName(fieldName string) *Field {
 	}
 	return nil
 }
+
+//func (tbl *Table) GetPrimaryKeyFields() []*Field {
+//	for _, d := range tbl.Decorators {
+//		d1, ok := d.(*decorator.PrimaryKey)
+//		if ok {
+//			return d1.Fields
+//		}
+//	}
+//	return []*Field{}
+//}
+
+//// GetMacroFields 获取宏字段
+//func (tbl *Table) GetMacroFields() []*decorator.Macro {
+//	var macroList []*decorator.Macro
+//	for _, d := range tbl.Decorators {
+//		if d1, ok := d.(*decorator.Macro); ok {
+//			macroList = append(macroList, d1)
+//		}
+//	}
+//	return macroList
+//}

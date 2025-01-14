@@ -15,7 +15,7 @@ type Resource struct {
 }
 
 func init() {
-	registry["resource"] = newResource
+	register("resource", newResource)
 }
 
 func newResource(_ *entities.Table, field *entities.Field, str string) error {

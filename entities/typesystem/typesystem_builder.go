@@ -2,7 +2,6 @@ package typesystem
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 )
 
@@ -29,28 +28,5 @@ func getKey(typeStr string) (string, string) {
 		return typeStr[:index], typeStr[index:]
 	} else {
 		return typeStr, ""
-	}
-}
-
-func GetTypeKind(t any) reflect.Kind {
-	switch t.(type) {
-	case *Boolean:
-		return reflect.Bool
-	case *Integer:
-		return reflect.Int
-	case *Float:
-		return reflect.Float64
-	case *Str:
-		return reflect.String
-	case *List:
-		return reflect.Slice
-	case *Tuple:
-		return reflect.Array
-	case *Map:
-		return reflect.Map
-	case *Lang:
-		return reflect.String
-	default:
-		return reflect.Interface
 	}
 }

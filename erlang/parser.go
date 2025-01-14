@@ -7,5 +7,5 @@ import (
 )
 
 func FromFile(path string) (*entities.Table, error) {
-	return parser.FromFile(path)
+	return parser.ParseFromFile(path)
 }

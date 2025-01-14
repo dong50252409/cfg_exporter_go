@@ -16,7 +16,8 @@ var (
 	splitMultiConsRegexp = regexp.MustCompile(`\r\n|\r|\n`)
 )
 
-func FromFile(path string) (*entities.Table, error) {
+// ParseFromFile 从文件读取解析配置表
+func ParseFromFile(path string) (*entities.Table, error) {
 	if ok := reader.CheckSupport(path); !ok {
 		return nil, fmt.Errorf("配置表不支持！ 文件路径:%s", path)
 	}
@@ -33,7 +34,7 @@ func FromFile(path string) (*entities.Table, error) {
 		Decorators: []any{},
 		Records:    records,
 	}
-	err = parser(table, records)
+	err = Parse(table, records)
 	if err != nil {
 		return nil, fmt.Errorf("配置表解析失败！ 文件路径:%s %s", path, err)
 	}
@@ -41,8 +42,8 @@ func FromFile(path string) (*entities.Table, error) {
 	return table, nil
 }
 
-// parser 解析配表
-func parser(tbl *entities.Table, records [][]string) error {
+// Parse 解析配表
+func Parse(tbl *entities.Table, records [][]string) error {
 	var fields []*entities.Field
 
 	// 字段名 字段类型 字段装饰器 字段注释 主体数据
@@ -58,12 +59,12 @@ func parser(tbl *entities.Table, records [][]string) error {
 		val := strings.TrimSpace(fnRow[column])
 		if val != "" {
 			field := &entities.Field{Column: column, ColIndex: colIndex, Name: val, Decorators: make(map[string]any)}
-			err := parseFieldType(field, ftRow)
+			err := ParseFieldType(field, ftRow)
 			if err != nil {
 				return err
 			}
-			parseFieldComment(field, fcRow)
-			err = parseRow(field, dataSet, recordRows)
+			ParseFieldComment(field, fcRow)
+			err = ParseRow(field, dataSet, recordRows)
 			if err != nil {
 				return err
 			}
@@ -88,21 +89,21 @@ func parser(tbl *entities.Table, records [][]string) error {
 			}
 		}
 
-		err := parseFieldDecorator(tbl, field, fdRow, column)
+		err := ParseFieldDecorator(tbl, field, fdRow, column)
 		if err != nil {
 			return err
 		}
 	}
 
-	err := runDecorator(tbl)
+	err := RunDecorator(tbl)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// 解析字段类型
-func parseFieldType(field *entities.Field, ftRow []string) error {
+// ParseFieldType 解析字段类型
+func ParseFieldType(field *entities.Field, ftRow []string) error {
 	val := strings.TrimSpace(ftRow[field.Column])
 	if val != "" {
 		t, err := typesystem.New(val)
@@ -116,8 +117,8 @@ func parseFieldType(field *entities.Field, ftRow []string) error {
 	return nil
 }
 
-// 解析字段注释
-func parseFieldComment(field *entities.Field, fcRow []string) {
+// ParseFieldComment 解析字段注释
+func ParseFieldComment(field *entities.Field, fcRow []string) {
 	if field.Column < len(fcRow) {
 		val := strings.TrimSpace(fcRow[field.Column])
 		if val != "" {
@@ -126,7 +127,8 @@ func parseFieldComment(field *entities.Field, fcRow []string) {
 	}
 }
 
-func parseRow(field *entities.Field, dataSet [][]any, records [][]string) error {
+// ParseRow 解析行
+func ParseRow(field *entities.Field, dataSet [][]any, records [][]string) error {
 	var value any
 	var err error
 	for rowIndex, recordRows := range records {
@@ -146,8 +148,8 @@ func parseRow(field *entities.Field, dataSet [][]any, records [][]string) error 
 	return nil
 }
 
-// 解析字段装饰器
-func parseFieldDecorator(tbl *entities.Table, field *entities.Field, fdRow []string, column int) error {
+// ParseFieldDecorator 解析字段装饰器
+func ParseFieldDecorator(tbl *entities.Table, field *entities.Field, fdRow []string, column int) error {
 	if column < len(fdRow) {
 		val := strings.TrimSpace(fdRow[column])
 		if val != "" {
@@ -163,7 +165,8 @@ func parseFieldDecorator(tbl *entities.Table, field *entities.Field, fdRow []str
 	return nil
 }
 
-func runDecorator(tbl *entities.Table) error {
+// RunDecorator 运行装饰器
+func RunDecorator(tbl *entities.Table) error {
 	for _, d := range tbl.Decorators {
 		err := d.(interfaces.ITableDecorator).RunTableDecorator(tbl)
 		if err != nil {

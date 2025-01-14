@@ -1,6 +1,7 @@
 package typesystem
 
 import (
+	"cfg_exporter/interfaces"
 	"cfg_exporter/util"
 	"fmt"
 	"reflect"
@@ -27,7 +28,7 @@ func NewMap(typeStr string) (*Map, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &Map{DefaultValue: "{}", KeyKind: GetTypeKind(kT), ValueKind: GetTypeKind(vT)}, nil
+		return &Map{DefaultValue: "{}", KeyKind: kT.(interfaces.ITypeSystem).GetKind(), ValueKind: vT.(interfaces.ITypeSystem).GetKind()}, nil
 	}
 	return nil, fmt.Errorf("类型格式错误 map|map(键元素类型, 值元素类型)")
 }

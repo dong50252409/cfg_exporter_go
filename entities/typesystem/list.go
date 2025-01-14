@@ -1,6 +1,7 @@
 package typesystem
 
 import (
+	"cfg_exporter/interfaces"
 	"cfg_exporter/util"
 	"fmt"
 	"reflect"
@@ -22,7 +23,7 @@ func NewList(typeStr string) (*List, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &List{ElementKind: GetTypeKind(t)}, nil
+		return &List{ElementKind: t.(interfaces.ITypeSystem).GetKind()}, nil
 	}
 	return nil, fmt.Errorf("类型格式错误 list|list(ElementType)")
 }
