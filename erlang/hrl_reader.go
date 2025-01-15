@@ -2,10 +2,10 @@ package erlang
 
 import (
 	"cfg_exporter/config"
+	"cfg_exporter/entities"
 	"github.com/stoewer/go-strcase"
 	"os"
 	"path/filepath"
-	"strings"
 	"text/template"
 )
 
@@ -24,7 +24,7 @@ const hrlHeadTemplate = `
 const hrlRecordTemplate = `
 {{- define "record" -}}
 -record({{.Table.ConfigName}}, {
-	{{- $lastIndex := len .Table.Fields | sub 1 }}
+	{{- $lastIndex := len .Table.Fields | add -1 }}
 	{{- range $index, $field := .Table.Fields }}
 	{{ $field.Name }} = {{ $field.DefaultValue }} :: {{ $field.Type }}{{ if lt $index $lastIndex }},{{ end }}	% {{ $field.Comment }}
 	{{- end }}
@@ -73,18 +73,10 @@ func (r *hrlRender) Execute() error {
 	// 必备数据
 	data := map[string]any{"Table": r}
 
-	// 用到的函数
-	funcMap := template.FuncMap{
-		"toUpper": strings.ToUpper,
-		"toLower": strings.ToLower,
-		"sub":     func(a, b int) int { return b - a },
-	}
-
 	// 解析模板字符串
-	tmpl := template.New("hrl").Funcs(funcMap)
+	tmpl := template.New("hrl").Funcs(entities.FuncMap)
 
 	for _, tmplStr := range []string{hrlHeadTemplate, hrlRecordTemplate, hrlMacroTemplate, hrlTailTemplate, hrlTemplate} {
-		//for _, tmplStr := range []string{hrlHeadTemplate, hrlRecordTemplate, hrlMacroTemplate} {
 		tmpl, err = tmpl.Parse(tmplStr)
 		if err != nil {
 			return err

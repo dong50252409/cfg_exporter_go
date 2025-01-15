@@ -2,10 +2,10 @@ package erlang
 
 import (
 	"cfg_exporter/config"
+	"cfg_exporter/entities"
 	"github.com/stoewer/go-strcase"
 	"os"
 	"path/filepath"
-	"strings"
 	"text/template"
 )
 
@@ -30,26 +30,30 @@ const erlGetTemplate = `
 {{- $configName := .Table.ConfigName | toLower -}}
 {{- $fields := .Table.Fields -}}
 {{- $dataSet := .Table.DataSet -}}
-{{- $dsLastIndex := index $dataSet 0 | len | sub 1 -}}
+{{- $dsLastIndex := index $dataSet 0 | len | add -1 -}}
 {{- $pkValuesList := .Table.GetPrimaryKeyValuesByString -}}
+{{- $pkLen := index $pkValuesList 0 | len -}}
+{{- $pkLastIndex := $pkLen | add -1 -}}
+{{- $pkSeq := seq $pkLen -}}
 
 {{- range $rowIndex, $dataRow := $dataSet -}}
 get({{ index $pkValuesList $rowIndex | joinByComma }})->
-    #{{ $configName }}{{ "{" }}
+    #{{ $configName }}{
         {{- range $fieldIndex, $field := $fields }}
         {{ $field.Name }} = {{ index $dataRow $field.ColIndex | $field.Convert }}{{ if lt $fieldIndex $dsLastIndex }},{{ end }}
         {{- end }}
-    {{ "};" }}
+    };
 {{ end -}}
-get(_ID0) ->
-    throw({config_error}, ?MODULE, _ID0).
+
+get({{ range $pkIndex, $_ := $pkSeq }}ID{{ $pkIndex }}{{ if lt $pkIndex $pkLastIndex }}, {{ end }}{{ end }}) ->
+    throw({config_error, ?MODULE, {{ range $pkIndex, $_ := $pkSeq }}ID{{ $pkIndex }}{{ if lt $pkIndex $pkLastIndex }}, {{ end }}{{ end }}}).
 {{- end -}}
 `
 const erlListTemplate = `
 {{- define "list" -}}
 {{/* 声明模板渲染所需的变量 */}}
 {{- $pkValuesList := .Table.GetPrimaryKeyValuesByString -}}
-{{- $pkLastIndex := len $pkValuesList | sub 1 -}}
+{{- $pkLastIndex := len $pkValuesList | add -1 -}}
 
 list() ->
     [
@@ -84,16 +88,8 @@ func (r *erlRender) Execute() error {
 	// 必备数据
 	data := map[string]any{"Table": r}
 
-	// 用到的函数
-	funcMap := template.FuncMap{
-		"toUpper":     strings.ToUpper,
-		"toLower":     strings.ToLower,
-		"joinByComma": func(items []string) string { return strings.Join(items, ", ") },
-		"sub":         func(a, b int) int { return b - a },
-	}
-
 	// 解析模板字符串
-	tmpl := template.New("erl").Funcs(funcMap)
+	tmpl := template.New("erl").Funcs(entities.FuncMap)
 
 	for _, tmplStr := range []string{erlHeadTemplate, erlGetTemplate, erlListTemplate, erlTemplate} {
 		//for _, tmplStr := range []string{erlTemplate} {

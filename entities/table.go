@@ -17,23 +17,6 @@ type Table struct {
 	Records [][]string
 }
 
-type Field struct {
-	// 字段在表中所在列
-	Column int
-	// 字段索引列
-	ColIndex int
-	// 字段名
-	Name string
-	// 字段类型
-	Type ITypeSystem
-	// 字段描述
-	Comment string
-	// 装饰器
-	Decorators map[string]any
-	// 默认值
-	DefaultValue string
-}
-
 // GetFieldByName 获取字段
 func (tbl *Table) GetFieldByName(fieldName string) *Field {
 	for _, field := range tbl.Fields {
@@ -103,13 +86,4 @@ func (tbl *Table) GetMacroFields() []*Macro {
 		}
 	}
 	return macroList
-}
-
-// Convert 将值类型转为目标语言的值字符串
-func (f *Field) Convert(v any) string {
-	if v != nil {
-		return f.Type.Convert(v)
-	} else {
-		return f.DefaultValue
-	}
 }
