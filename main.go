@@ -3,8 +3,9 @@ package main
 import (
 	"cfg_exporter/config"
 	"cfg_exporter/erlang"
+	"cfg_exporter/reader"
+	"cfg_exporter/render"
 	"flag"
-	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -16,25 +17,34 @@ func main() {
 		flag.Usage()
 		return
 	}
-	run()
-}
-
-func run() {
 	err := filepath.WalkDir(config.Config.Source, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 		if !d.IsDir() {
-			t, err := erlang.FromFile(path)
+			err := run(path)
 			if err != nil {
 				return err
 			}
-			//render.ToFile(SchemaName, t)
-			fmt.Printf("%v", t)
 		}
 		return nil
 	})
 	if err != nil {
 		panic(err)
 	}
+}
+
+func run(path string) error {
+	if ok := reader.CheckSupport(path); !ok {
+		return nil
+	}
+	t, err := erlang.FromFile(path)
+	if err != nil {
+		return err
+	}
+	err = render.ToFile(SchemaName, t)
+	if err != nil {
+		return err
+	}
+	return nil
 }

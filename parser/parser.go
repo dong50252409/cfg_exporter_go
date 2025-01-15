@@ -2,12 +2,10 @@ package parser
 
 import (
 	"cfg_exporter/entities"
-	"cfg_exporter/entities/decorator"
-	"cfg_exporter/entities/typesystem"
-	"cfg_exporter/interfaces"
 	"cfg_exporter/reader"
 	"fmt"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"strings"
 )
@@ -64,6 +62,7 @@ func Parse(tbl *entities.Table, records [][]string) error {
 				return err
 			}
 			ParseFieldComment(field, fcRow)
+			ParseFieldDefaultValue(field)
 			err = ParseRow(field, dataSet, recordRows)
 			if err != nil {
 				return err
@@ -106,7 +105,7 @@ func Parse(tbl *entities.Table, records [][]string) error {
 func ParseFieldType(field *entities.Field, ftRow []string) error {
 	val := strings.TrimSpace(ftRow[field.Column])
 	if val != "" {
-		t, err := typesystem.New(val)
+		t, err := entities.NewType(val)
 		if err != nil {
 			return fmt.Errorf("字段：%s 类型：%s %s", field.Name, val, err)
 		}
@@ -127,6 +126,11 @@ func ParseFieldComment(field *entities.Field, fcRow []string) {
 	}
 }
 
+// ParseFieldDefaultValue 解析字段默认值
+func ParseFieldDefaultValue(field *entities.Field) {
+	field.DefaultValue = field.Type.GetDefaultValue()
+}
+
 // ParseRow 解析行
 func ParseRow(field *entities.Field, dataSet [][]any, records [][]string) error {
 	var value any
@@ -136,7 +140,15 @@ func ParseRow(field *entities.Field, dataSet [][]any, records [][]string) error 
 			value = nil
 		} else {
 			cell := recordRows[field.Column]
-			value, err = field.Type.(interfaces.ITypeSystem).ParseString(cell)
+			if cell == "" {
+				if field.Type.GetKind() == reflect.String {
+					value, err = field.Type.ParseString(cell)
+				} else {
+					value = nil
+				}
+			} else {
+				value, err = field.Type.ParseString(cell)
+			}
 			if err != nil {
 				return fmt.Errorf("字段:%s 行:%d 列：%d 错误:%s", field.Name, rowIndex+5, field.Column+1, err)
 			}
@@ -155,7 +167,7 @@ func ParseFieldDecorator(tbl *entities.Table, field *entities.Field, fdRow []str
 		if val != "" {
 			parts := splitMultiConsRegexp.Split(val, -1)
 			for _, part := range parts {
-				err := decorator.New(tbl, field, part)
+				err := entities.NewDecorator(tbl, field, part)
 				if err != nil {
 					return fmt.Errorf("字段：%s 装饰器：%s %s", field.Name, part, err)
 				}
@@ -168,17 +180,17 @@ func ParseFieldDecorator(tbl *entities.Table, field *entities.Field, fdRow []str
 // RunDecorator 运行装饰器
 func RunDecorator(tbl *entities.Table) error {
 	for _, d := range tbl.Decorators {
-		err := d.(interfaces.ITableDecorator).RunTableDecorator(tbl)
+		err := d.(entities.ITableDecorator).RunTableDecorator(tbl)
 		if err != nil {
-			return fmt.Errorf("装饰器：%s %s", d.(interfaces.IDecorator).Name(), err)
+			return fmt.Errorf("装饰器：%s %s", d.(entities.IDecorator).Name(), err)
 		}
 	}
 
 	for _, field := range tbl.Fields {
 		for _, d := range field.Decorators {
-			err := d.(interfaces.IFieldDecorator).RunFieldDecorator(tbl, field)
+			err := d.(entities.IFieldDecorator).RunFieldDecorator(tbl, field)
 			if err != nil {
-				return fmt.Errorf("字段：%s 装饰器：%s 列：%d %s", field.Name, d.(interfaces.IDecorator).Name(), field.Column+1, err)
+				return fmt.Errorf("字段：%s 装饰器：%s 列：%d %s", field.Name, d.(entities.IDecorator).Name(), field.Column+1, err)
 			}
 		}
 	}

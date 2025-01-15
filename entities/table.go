@@ -25,11 +25,13 @@ type Field struct {
 	// 字段名
 	Name string
 	// 字段类型
-	Type any
+	Type ITypeSystem
 	// 字段描述
 	Comment string
 	// 装饰器
 	Decorators map[string]any
+	// 默认值
+	DefaultValue string
 }
 
 // GetFieldByName 获取字段
@@ -42,23 +44,72 @@ func (tbl *Table) GetFieldByName(fieldName string) *Field {
 	return nil
 }
 
-//func (tbl *Table) GetPrimaryKeyFields() []*Field {
-//	for _, d := range tbl.Decorators {
-//		d1, ok := d.(*decorator.PrimaryKey)
-//		if ok {
-//			return d1.Fields
-//		}
-//	}
-//	return []*Field{}
-//}
+// GetFieldByColIndex 获取字段
+func (tbl *Table) GetFieldByColIndex(colIndex int) *Field {
+	for _, field := range tbl.Fields {
+		if field.ColIndex == colIndex {
+			return field
+		}
+	}
+	return nil
+}
 
-//// GetMacroFields 获取宏字段
-//func (tbl *Table) GetMacroFields() []*decorator.Macro {
-//	var macroList []*decorator.Macro
-//	for _, d := range tbl.Decorators {
-//		if d1, ok := d.(*decorator.Macro); ok {
-//			macroList = append(macroList, d1)
-//		}
-//	}
-//	return macroList
-//}
+// GetPrimaryKeyFields 获取主键字段列表
+func (tbl *Table) GetPrimaryKeyFields() []*Field {
+	for _, d := range tbl.Decorators {
+		d1, ok := d.(*PrimaryKey)
+		if ok {
+			return d1.Fields
+		}
+	}
+	return []*Field{}
+}
+
+// GetPrimaryKeyValues 获取主键值列表
+func (tbl *Table) GetPrimaryKeyValues() [][]any {
+	fields := tbl.GetPrimaryKeyFields()
+	var list = make([][]any, 0, len(tbl.DataSet))
+	for _, dataRow := range tbl.DataSet {
+		var items []any
+		for _, field := range fields {
+			items = append(items, dataRow[field.ColIndex])
+		}
+		list = append(list, items)
+	}
+	return list
+}
+
+// GetPrimaryKeyValuesByString 获取主键值列表,并将值转为字符串
+func (tbl *Table) GetPrimaryKeyValuesByString() [][]string {
+	fields := tbl.GetPrimaryKeyFields()
+	var list = make([][]string, 0, len(tbl.DataSet))
+	for _, dataRow := range tbl.DataSet {
+		var items []string
+		for _, field := range fields {
+			v := dataRow[field.ColIndex]
+			items = append(items, field.Type.Convert(v))
+		}
+		list = append(list, items)
+	}
+	return list
+}
+
+// GetMacroFields 获取宏字集合列表
+func (tbl *Table) GetMacroFields() []*Macro {
+	var macroList []*Macro
+	for _, d := range tbl.Decorators {
+		if d1, ok := d.(*Macro); ok {
+			macroList = append(macroList, d1)
+		}
+	}
+	return macroList
+}
+
+// Convert 将值类型转为目标语言的值字符串
+func (f *Field) Convert(v any) string {
+	if v != nil {
+		return f.Type.Convert(v)
+	} else {
+		return f.DefaultValue
+	}
+}

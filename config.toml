@@ -27,6 +27,6 @@ field_name_row = 5
 # 导出目标路径
 destination = "./samples/erlang/"
 # 文件前缀
-file_prefix = "cfg"
+file_prefix = "cfg_"
 # record前缀
-record_prefix = "cfg"
+record_prefix = "cfg_"

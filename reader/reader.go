@@ -4,12 +4,12 @@ import (
 	"path/filepath"
 )
 
-var registry = make(map[string]IReader)
-
 type IReader interface {
 	CheckSupport(path string) bool
 	Read(path string) ([][]string, error)
 }
+
+var registry = make(map[string]IReader)
 
 // Register 注册文件读取器
 func Register(key string, cls IReader) {
