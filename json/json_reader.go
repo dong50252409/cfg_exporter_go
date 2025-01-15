@@ -39,15 +39,21 @@ func (r *jsonRender) Execute() error {
 	for _, rowData := range r.DataSet {
 		rowMap := make(map[string]interface{}, len(r.Fields))
 		for fieldIndex, field := range r.Fields {
-			if rowData[fieldIndex] != nil {
-				rowMap[field.Name] = rowData[fieldIndex]
+			v := rowData[fieldIndex]
+			switch v {
+			case nil:
+				continue
+			case "":
+				continue
+			default:
+				rowMap[field.Name] = convert(v)
 			}
 		}
 		dataList = append(dataList, rowMap)
 	}
 
 	// 序列化为 JSON
-	jsonData, err := json.Marshal(dataList)
+	jsonData, err := json.MarshalIndent(dataList, "   ", "   ")
 	if err != nil {
 		return err
 	}

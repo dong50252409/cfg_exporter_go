@@ -9,10 +9,10 @@ import (
 
 func toString(data interface{}) string {
 	switch v := data.(type) {
-	case int64: // 处理整数
-		return strconv.FormatInt(v, 10)
-	case float64: // 处理浮点数
-		return strconv.FormatFloat(v, 'f', -1, 64)
+	case int8, int16, int32, int64, int: // 处理整数
+		return strconv.FormatInt(v.(int64), 10)
+	case float32, float64: // 处理浮点数
+		return strconv.FormatFloat(v.(float64), 'f', -1, 64)
 	case string: // 处理字符串
 		return fmt.Sprintf("<<\"%s\"/utf8>>", v)
 	case bool: // 处理布尔值

@@ -2,6 +2,7 @@ package typesystem
 
 import (
 	"cfg_exporter/entities"
+	"cfg_exporter/erlang"
 )
 
 type ErlList struct {
@@ -21,7 +22,7 @@ func newList(typeStr string) (entities.ITypeSystem, error) {
 }
 
 func (l *ErlList) Convert(val any) string {
-	return toString(val)
+	return erlang.toString(val)
 }
 
 func (l *ErlList) String() string {

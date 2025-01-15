@@ -2,6 +2,7 @@ package typesystem
 
 import (
 	"cfg_exporter/entities"
+	"cfg_exporter/erlang"
 )
 
 type ErlMap struct {
@@ -21,7 +22,7 @@ func newMap(typeStr string) (entities.ITypeSystem, error) {
 }
 
 func (*ErlMap) Convert(val any) string {
-	return toString(val)
+	return erlang.toString(val)
 }
 
 func (m *ErlMap) String() string {

@@ -2,6 +2,7 @@ package typesystem
 
 import (
 	"cfg_exporter/entities"
+	"cfg_exporter/erlang"
 )
 
 type ErlTuple struct {
@@ -21,7 +22,7 @@ func newTuple(typeStr string) (entities.ITypeSystem, error) {
 }
 
 func (*ErlTuple) Convert(val any) string {
-	return toString(val)
+	return erlang.toString(val)
 }
 
 func (*ErlTuple) String() string {
