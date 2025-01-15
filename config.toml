@@ -13,12 +13,13 @@ field_constraint_row = 3
 # 主体数据起始行号
 body_start_row = 6
 
-# typescript导出配置
-[schema.typescript]
+[schema.json]
 # 字段名行号
 field_name_row = 4
 # 导出目标路径
-destination = "./samples/ts/"
+destination = "./samples/json/"
+# 文件前缀
+file_prefix = "cfg_"
 
 # Erlang导出配置
 [schema.erlang]
@@ -30,3 +31,10 @@ destination = "./samples/erlang/"
 file_prefix = "cfg_"
 # record前缀
 record_prefix = "cfg_"
+
+# typescript导出配置
+[schema.typescript]
+# 字段名行号
+field_name_row = 4
+# 导出目标路径
+destination = "./samples/typescript/"

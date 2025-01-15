@@ -79,11 +79,11 @@ func (r *erlRender) Execute() error {
 	}
 
 	erlFilepath := filepath.Join(erlDir, r.Filename())
-	erlFile, err := os.Create(erlFilepath)
+	fileIO, err := os.Create(erlFilepath)
 	if err != nil {
 		return err
 	}
-	defer func() { _ = erlFile.Close() }()
+	defer func() { _ = fileIO.Close() }()
 
 	// 必备数据
 	data := map[string]any{"Table": r}
@@ -100,7 +100,7 @@ func (r *erlRender) Execute() error {
 	}
 
 	// 执行模板渲染并输出到文件
-	err = tmpl.Execute(erlFile, data)
+	err = tmpl.Execute(fileIO, data)
 	if err != nil {
 		return err
 	}

@@ -64,11 +64,11 @@ func (r *hrlRender) Execute() error {
 		return err
 	}
 	hrlFilepath := filepath.Join(hrlDir, r.Filename())
-	hrlFile, err := os.Create(hrlFilepath)
+	fileIO, err := os.Create(hrlFilepath)
 	if err != nil {
 		return err
 	}
-	defer func() { _ = hrlFile.Close() }()
+	defer func() { _ = fileIO.Close() }()
 
 	// 必备数据
 	data := map[string]any{"Table": r}
@@ -84,7 +84,7 @@ func (r *hrlRender) Execute() error {
 	}
 
 	// 执行模板渲染并输出到文件
-	err = tmpl.Execute(hrlFile, data)
+	err = tmpl.Execute(fileIO, data)
 	if err != nil {
 		return err
 	}

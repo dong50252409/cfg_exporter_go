@@ -2,7 +2,7 @@ package main
 
 import (
 	"cfg_exporter/config"
-	"cfg_exporter/erlang"
+	"cfg_exporter/json"
 	"cfg_exporter/reader"
 	"cfg_exporter/render"
 	"flag"
@@ -38,7 +38,7 @@ func run(path string) error {
 	if ok := reader.CheckSupport(path); !ok {
 		return nil
 	}
-	t, err := erlang.FromFile(path)
+	t, err := json.FromFile(path)
 	if err != nil {
 		return err
 	}
