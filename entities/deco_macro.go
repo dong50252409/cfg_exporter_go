@@ -13,6 +13,7 @@ type MacroDetail struct {
 }
 
 type Macro struct {
+	MacroName    string
 	KeyField     *Field
 	ValueField   *Field
 	CommentField *Field
@@ -25,33 +26,33 @@ func init() {
 
 func newMacro(tbl *Table, field *Field, str string) error {
 	args := util.SubArgs(str, ",")
-	if len(args) == 1 {
-		valueFieldName := args[0]
-		valueField := tbl.GetFieldByName(valueFieldName)
-		if valueField == nil {
-			return fmt.Errorf("%s 字段不存在", valueFieldName)
-		}
-
-		tbl.Decorators = append(tbl.Decorators, &Macro{KeyField: field, ValueField: valueField})
-		return nil
-	}
-
 	if len(args) == 2 {
-		valueFieldName, CommentFieldName := args[0], args[1]
+		macroName, valueFieldName := args[0], args[1]
 		valueField := tbl.GetFieldByName(valueFieldName)
 		if valueField == nil {
-			return fmt.Errorf("%s 值字段不存在", valueFieldName)
+			return fmt.Errorf("%s 宏 %s 值字段不存在", macroName, valueFieldName)
 		}
 
-		commentField := tbl.GetFieldByName(CommentFieldName)
-		if commentField == nil {
-			return fmt.Errorf("%s 描述字段不存在", CommentFieldName)
-		}
-
-		tbl.Decorators = append(tbl.Decorators, &Macro{KeyField: field, ValueField: valueField, CommentField: commentField})
+		tbl.Decorators = append(tbl.Decorators, &Macro{MacroName: macroName, KeyField: field, ValueField: valueField})
 		return nil
 	}
-	return fmt.Errorf("参数格式错误 macro(值字段名[,描述字段名])")
+
+	if len(args) == 3 {
+		macroName, valueFieldName, commentFieldName := args[0], args[1], args[2]
+		valueField := tbl.GetFieldByName(valueFieldName)
+		if valueField == nil {
+			return fmt.Errorf("%s 宏 %s 值字段不存在", macroName, valueFieldName)
+		}
+
+		commentField := tbl.GetFieldByName(commentFieldName)
+		if commentField == nil {
+			return fmt.Errorf("%s 宏 %s 描述字段不存在", macroName, commentFieldName)
+		}
+
+		tbl.Decorators = append(tbl.Decorators, &Macro{MacroName: macroName, KeyField: field, ValueField: valueField, CommentField: commentField})
+		return nil
+	}
+	return fmt.Errorf("参数格式错误 macro(宏名,值字段名[,描述字段名])")
 }
 
 func (m *Macro) Name() string {

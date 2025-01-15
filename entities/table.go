@@ -77,8 +77,8 @@ func (tbl *Table) GetPrimaryKeyValuesByString() [][]string {
 	return list
 }
 
-// GetMacroFields 获取宏字集合列表
-func (tbl *Table) GetMacroFields() []*Macro {
+// GetMacroDecorators 获取宏装饰器集合列表
+func (tbl *Table) GetMacroDecorators() []*Macro {
 	var macroList []*Macro
 	for _, d := range tbl.Decorators {
 		if d1, ok := d.(*Macro); ok {

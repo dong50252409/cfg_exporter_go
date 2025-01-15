@@ -34,8 +34,9 @@ const hrlRecordTemplate = `
 
 const hrlMacroTemplate = `
 {{- define "macro" -}}
-{{- range $_, $macro := .Table.GetMacroFields -}}
-{{- range $_, $macroDetail := $macro.List -}}
+{{- range $_, $macro := .Table.GetMacroDecorators -}}
+%% {{ $macro.MacroName }}
+{{ range $_, $macroDetail := $macro.List -}}
 -define({{ $macroDetail.Key | toUpper}}, {{ $macroDetail.Value }}).	  % {{ $macroDetail.Comment }}
 {{ end }}
 {{ end -}}

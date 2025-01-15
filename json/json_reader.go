@@ -35,9 +35,9 @@ func (r *jsonRender) Execute() error {
 	}
 	defer func() { _ = fileIO.Close() }()
 
-	var dataList = make([]map[string]interface{}, 0, len(r.DataSet))
+	var dataList = make([]map[string]any, 0, len(r.DataSet))
 	for _, rowData := range r.DataSet {
-		rowMap := make(map[string]interface{}, len(r.Fields))
+		rowMap := make(map[string]any, len(r.Fields))
 		for fieldIndex, field := range r.Fields {
 			v := rowData[fieldIndex]
 			switch v {
@@ -52,8 +52,21 @@ func (r *jsonRender) Execute() error {
 		dataList = append(dataList, rowMap)
 	}
 
+	var macroMap = make(map[string]any)
+	for _, macro := range r.GetMacroDecorators() {
+		var childMacroMap = make(map[string]any)
+		for _, macroDetail := range macro.List {
+			childMacroMap[macroDetail.Key] = macroDetail.Value
+		}
+		macroMap[macro.MacroName] = childMacroMap
+	}
+
 	// 序列化为 JSON
-	jsonData, err := json.MarshalIndent(dataList, "   ", "   ")
+	jsonData, err := json.MarshalIndent(map[string]any{
+		"data_set":  dataList,
+		"macro_set": macroMap,
+	}, "", "    ")
+
 	if err != nil {
 		return err
 	}
@@ -62,6 +75,7 @@ func (r *jsonRender) Execute() error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
