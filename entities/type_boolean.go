@@ -8,7 +8,11 @@ import (
 type Boolean struct {
 }
 
-func NewBoolean(_ string) (*Boolean, error) {
+func init() {
+	TypeRegister("bool", NewBoolean)
+}
+
+func NewBoolean(_ string) (ITypeSystem, error) {
 	t := &Boolean{}
 	return t, nil
 }

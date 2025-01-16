@@ -8,7 +8,11 @@ import (
 type Lang struct {
 }
 
-func NewLang(_ string) (*Lang, error) {
+func init() {
+	TypeRegister("lang", NewLang)
+}
+
+func NewLang(_ string) (ITypeSystem, error) {
 	return &Lang{}, nil
 }
 

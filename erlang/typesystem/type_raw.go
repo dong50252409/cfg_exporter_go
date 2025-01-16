@@ -6,19 +6,19 @@ import (
 )
 
 type ErlRaw struct {
-	*entities.Raw
+	entities.ITypeSystem
 }
 
 func init() {
-	entities.TypeRegister("str", newRaw)
+	typeRegister("str", newRaw)
 }
 
 func newRaw(typeStr string) (entities.ITypeSystem, error) {
-	newRaw, err := entities.NewRaw(typeStr)
+	raw, err := entities.NewRaw(typeStr)
 	if err != nil {
 		return nil, err
 	}
-	return &ErlRaw{Raw: newRaw}, nil
+	return &ErlRaw{ITypeSystem: raw}, nil
 }
 
 func (s *ErlRaw) Convert(val any) string {

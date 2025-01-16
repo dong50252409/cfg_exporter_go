@@ -6,11 +6,11 @@ import (
 )
 
 type ErlLang struct {
-	*entities.Lang
+	entities.ITypeSystem
 }
 
 func init() {
-	entities.TypeRegister("lang", newLang)
+	typeRegister("lang", newLang)
 }
 
 func newLang(typeStr string) (entities.ITypeSystem, error) {
@@ -18,7 +18,7 @@ func newLang(typeStr string) (entities.ITypeSystem, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ErlLang{Lang: lang}, nil
+	return &ErlLang{ITypeSystem: lang}, nil
 }
 
 func (l *ErlLang) Convert(val any) string {

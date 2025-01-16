@@ -13,12 +13,12 @@ func init() {
 }
 
 type TomlConfig struct {
-	Source             string            `toml:"source"`
-	FieldCommentRow    int               `toml:"field_comment_row"`
-	FieldTypeRow       int               `toml:"field_type_row"`
-	FieldConstraintRow int               `toml:"field_constraint_row"`
-	BodyStartRow       int               `toml:"body_start_row"`
-	Schema             map[string]Schema `toml:"schema"`
+	Source            string            `toml:"source"`
+	FieldCommentRow   int               `toml:"field_comment_row"`
+	FieldTypeRow      int               `toml:"field_type_row"`
+	FieldDecoratorRow int               `toml:"field_decorator_row"`
+	BodyStartRow      int               `toml:"body_start_row"`
+	Schema            map[string]Schema `toml:"schema"`
 }
 
 type ImportExtension struct {

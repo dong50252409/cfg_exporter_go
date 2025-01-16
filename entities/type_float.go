@@ -18,7 +18,11 @@ var floatByteSizes = map[string]int{
 	"64": 64,
 }
 
-func NewFloat(typeStr string) (*Float, error) {
+func init() {
+	TypeRegister("float", NewFloat)
+}
+
+func NewFloat(typeStr string) (ITypeSystem, error) {
 	args := util.SubArgs(typeStr, ",")
 	bit := "64"
 	if len(args) == 1 {

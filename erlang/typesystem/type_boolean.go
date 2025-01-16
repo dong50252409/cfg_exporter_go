@@ -5,11 +5,11 @@ import (
 )
 
 type ErlBoolean struct {
-	*entities.Boolean
+	entities.ITypeSystem
 }
 
 func init() {
-	entities.TypeRegister("bool", newBoolean)
+	typeRegister("bool", newBoolean)
 }
 
 func newBoolean(typeStr string) (entities.ITypeSystem, error) {
@@ -17,7 +17,7 @@ func newBoolean(typeStr string) (entities.ITypeSystem, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ErlBoolean{Boolean: boolean}, nil
+	return &ErlBoolean{ITypeSystem: boolean}, nil
 }
 
 func (b *ErlBoolean) String() string {

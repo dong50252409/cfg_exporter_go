@@ -11,7 +11,11 @@ type Tuple struct {
 	ElementKind reflect.Kind
 }
 
-func NewTuple(typeStr string) (*Tuple, error) {
+func init() {
+	TypeRegister("tuple", NewTuple)
+}
+
+func NewTuple(typeStr string) (ITypeSystem, error) {
 	args := util.SubArgs(typeStr, ",")
 	switch len(args) {
 	case 0:
@@ -25,6 +29,7 @@ func NewTuple(typeStr string) (*Tuple, error) {
 	}
 	return nil, fmt.Errorf("类型格式错误 tuple|tuple(元素类型)")
 }
+
 func (t *Tuple) ParseString(str string) (any, error) {
 	v, err := ParseString(str)
 	if err != nil {

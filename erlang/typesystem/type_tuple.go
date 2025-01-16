@@ -5,11 +5,11 @@ import (
 )
 
 type ErlTuple struct {
-	*entities.Tuple
+	entities.ITypeSystem
 }
 
 func init() {
-	entities.TypeRegister("tuple", newTuple)
+	typeRegister("tuple", newTuple)
 }
 
 func newTuple(typeStr string) (entities.ITypeSystem, error) {
@@ -17,7 +17,7 @@ func newTuple(typeStr string) (entities.ITypeSystem, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ErlTuple{Tuple: tuple}, nil
+	return &ErlTuple{ITypeSystem: tuple}, nil
 }
 
 func (*ErlTuple) Convert(val any) string {

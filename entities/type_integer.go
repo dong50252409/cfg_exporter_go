@@ -20,7 +20,11 @@ var intByteSizes = map[string]int{
 	"64": 64,
 }
 
-func NewInteger(typeStr string) (*Integer, error) {
+func init() {
+	TypeRegister("int", NewInteger)
+}
+
+func NewInteger(typeStr string) (ITypeSystem, error) {
 	args := util.SubArgs(typeStr, ",")
 	bit := "64"
 	if len(args) == 1 {

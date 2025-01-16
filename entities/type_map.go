@@ -12,7 +12,11 @@ type Map struct {
 	ValueKind reflect.Kind
 }
 
-func NewMap(typeStr string) (*Map, error) {
+func init() {
+	TypeRegister("map", NewMap)
+}
+
+func NewMap(typeStr string) (ITypeSystem, error) {
 	args := util.SubArgs(typeStr, ",")
 	switch len(args) {
 	case 0:

@@ -8,7 +8,11 @@ import (
 type Raw struct {
 }
 
-func NewRaw(_ string) (*Raw, error) {
+func init() {
+	TypeRegister("raw", NewRaw)
+}
+
+func NewRaw(_ string) (ITypeSystem, error) {
 	return &Raw{}, nil
 }
 

@@ -5,11 +5,11 @@ import (
 )
 
 type ErlInteger struct {
-	*entities.Integer
+	entities.ITypeSystem
 }
 
 func init() {
-	entities.TypeRegister("int", newInteger)
+	typeRegister("int", newInteger)
 }
 
 func newInteger(typeStr string) (entities.ITypeSystem, error) {
@@ -17,7 +17,7 @@ func newInteger(typeStr string) (entities.ITypeSystem, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ErlInteger{Integer: integer}, nil
+	return &ErlInteger{ITypeSystem: integer}, nil
 }
 
 func (i *ErlInteger) String() string {

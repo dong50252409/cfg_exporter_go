@@ -6,19 +6,19 @@ import (
 )
 
 type ErlStr struct {
-	*entities.Str
+	entities.ITypeSystem
 }
 
 func init() {
-	entities.TypeRegister("str", newStr)
+	typeRegister("str", newStr)
 }
 
 func newStr(typeStr string) (entities.ITypeSystem, error) {
-	newStr, err := entities.NewStr(typeStr)
+	s, err := entities.NewStr(typeStr)
 	if err != nil {
 		return nil, err
 	}
-	return &ErlStr{Str: newStr}, nil
+	return &ErlStr{ITypeSystem: s}, nil
 }
 
 func (s *ErlStr) Convert(val any) string {

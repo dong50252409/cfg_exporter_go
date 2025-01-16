@@ -8,7 +8,11 @@ import (
 type Str struct {
 }
 
-func NewStr(_ string) (*Str, error) {
+func init() {
+	TypeRegister("str", NewStr)
+}
+
+func NewStr(_ string) (ITypeSystem, error) {
 	return &Str{}, nil
 }
 

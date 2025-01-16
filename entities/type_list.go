@@ -11,7 +11,11 @@ type List struct {
 	ElementKind reflect.Kind
 }
 
-func NewList(typeStr string) (*List, error) {
+func init() {
+	TypeRegister("list", NewList)
+}
+
+func NewList(typeStr string) (ITypeSystem, error) {
 	args := util.SubArgs(typeStr, ",")
 	switch len(args) {
 	case 0:

@@ -2,7 +2,9 @@ package main
 
 import (
 	"cfg_exporter/config"
-	"cfg_exporter/json"
+	_ "cfg_exporter/erlang"
+	_ "cfg_exporter/json"
+	"cfg_exporter/parser"
 	"cfg_exporter/reader"
 	"cfg_exporter/render"
 	"flag"
@@ -22,8 +24,7 @@ func main() {
 			return err
 		}
 		if !d.IsDir() {
-			err := run(path)
-			if err != nil {
+			if err := run(path); err != nil {
 				return err
 			}
 		}
@@ -38,13 +39,20 @@ func run(path string) error {
 	if ok := reader.CheckSupport(path); !ok {
 		return nil
 	}
-	t, err := json.FromFile(path)
+
+	p, err := parser.NewParser(SchemaName)
 	if err != nil {
 		return err
 	}
-	err = render.ToFile(SchemaName, t)
+
+	t, err := p.ParseFromFile(path)
 	if err != nil {
 		return err
 	}
+
+	if err = render.ToFile(SchemaName, t); err != nil {
+		return err
+	}
+
 	return nil
 }
