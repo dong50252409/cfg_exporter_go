@@ -1,0 +1,34 @@
+namespace example;
+
+table TestDict {
+  key: string;
+  value: int;
+}
+
+table TestNestedDictEntry {
+  key: string;
+  values: [int];
+}
+
+table TestNestedListEntry {
+  values: [int];
+}
+
+table DataSet {
+  id: int;
+  str: string;
+  testBool: bool;
+  testDict: [TestDict];
+  testFloat: float;
+  testId: int;
+  testList: [int];
+  testNestedDict: [TestNestedDictEntry];
+  testNestedList: [TestNestedListEntry];
+  testTuple: [int];
+}
+
+table Root {
+  dataSet: [DataSet];
+}
+
+root_type Root;
