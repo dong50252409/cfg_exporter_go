@@ -2,11 +2,9 @@ package entities
 
 import (
 	"cfg_exporter/util"
-	"fmt"
 	"maps"
 	"reflect"
 	"strconv"
-	"strings"
 )
 
 type Integer struct {
@@ -25,10 +23,9 @@ func init() {
 }
 
 func NewInteger(typeStr string) (ITypeSystem, error) {
-	args := util.SubArgs(typeStr, ",")
 	bit := "64"
-	if len(args) == 1 {
-		bit = args[0]
+	if param := util.SubParam(typeStr); param != "" {
+		bit = param
 	}
 	if bytes, ok := intByteSizes[bit]; ok {
 		return &Integer{BitSize: bytes}, nil
@@ -38,10 +35,14 @@ func NewInteger(typeStr string) (ITypeSystem, error) {
 	for k := range maps.Keys(intByteSizes) {
 		l = append(l, k)
 	}
-	return nil, fmt.Errorf("类型格式错误 int|int(%s)", strings.Join(l, "|"))
+	return nil, ErrorTypeBaseInvalid(&Integer{}, l)
 }
 func (i *Integer) ParseString(str string) (any, error) {
-	return strconv.ParseInt(str, 10, i.BitSize)
+	parseInt, err := strconv.ParseInt(str, 10, i.BitSize)
+	if err != nil {
+		return nil, ErrorTypeParseFailed(i, str)
+	}
+	return parseInt, nil
 }
 
 func (i *Integer) Convert(val any) string {

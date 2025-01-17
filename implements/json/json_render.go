@@ -85,7 +85,7 @@ func (r *jsonRender) ExportDir() string {
 }
 
 func (r *jsonRender) Filename() string {
-	return strcase.UpperCamelCase(config.Config.Schema["json"].FilePrefix+r.Name) + ".json"
+	return strcase.KebabCase(config.Config.Schema["json"].FilePrefix+r.Name) + ".json"
 }
 
 func (r *jsonRender) ConfigName() string {

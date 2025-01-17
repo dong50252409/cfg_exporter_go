@@ -14,9 +14,8 @@ func init() {
 }
 
 func newDefault(_ *Table, field *Field, str string) error {
-	args := util.SubArgs(str, ",")
-	if len(args) == 1 {
-		field.Decorators["default"] = &Default{args[0]}
+	if param := util.SubParam(str); param != "" {
+		field.Decorators["default"] = &Default{param}
 		return nil
 	}
 	return fmt.Errorf("参数格式错误 default(默认值)")

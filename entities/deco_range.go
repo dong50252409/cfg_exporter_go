@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 // Range 范围
@@ -19,25 +20,26 @@ func init() {
 }
 
 func newRange(_ *Table, field *Field, str string) error {
-	args := util.SubArgs(str, ",")
-	if len(args) == 2 {
-		switch field.Type.(ITypeSystem).GetKind() {
-		case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			v1, err1 := strconv.ParseInt(args[0], 10, 64)
-			v2, err2 := strconv.ParseInt(args[1], 10, 64)
-			if err1 == nil && err2 == nil && v1 <= v2 {
-				field.Decorators["range"] = &Range{minValue: v1, maxValue: v2}
-				return nil
+	if param := util.SubParam(str); param != "" {
+		if l := strings.Split(param, ","); len(l) == 2 {
+			switch field.Type.GetKind() {
+			case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				v1, err1 := strconv.ParseInt(l[0], 10, 64)
+				v2, err2 := strconv.ParseInt(l[1], 10, 64)
+				if err1 == nil && err2 == nil && v1 <= v2 {
+					field.Decorators["range"] = &Range{minValue: v1, maxValue: v2}
+					return nil
+				}
+			case reflect.Float32, reflect.Float64:
+				v1, err1 := strconv.ParseFloat(l[0], 64)
+				v2, err2 := strconv.ParseFloat(l[1], 64)
+				if err1 == nil && err2 == nil && v1 <= v2 {
+					field.Decorators["range"] = &Range{minValue: v1, maxValue: v2}
+					return nil
+				}
+			default:
+				return fmt.Errorf("类型无法使用此装饰器")
 			}
-		case reflect.Float32, reflect.Float64:
-			v1, err1 := strconv.ParseFloat(args[0], 64)
-			v2, err2 := strconv.ParseFloat(args[1], 64)
-			if err1 == nil && err2 == nil && v1 <= v2 {
-				field.Decorators["range"] = &Range{minValue: v1, maxValue: v2}
-				return nil
-			}
-		default:
-			return fmt.Errorf("类型无法使用此装饰器")
 		}
 	}
 	return fmt.Errorf("参数格式错误 range(最小值,最大值)")
@@ -60,8 +62,8 @@ func (*Range) Name() string {
 	return "range"
 }
 
-func (r *Range) Equal(rowIndex int, v any, t any) error {
-	switch t.(ITypeSystem).GetKind() {
+func (r *Range) Equal(rowIndex int, v any, t ITypeSystem) error {
+	switch t.GetKind() {
 	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		if !(r.minValue.(int64) <= v.(int64) && v.(int64) <= r.maxValue.(int64)) {
 			return fmt.Errorf("第 %d 行 数值必须在%d到%d之间", rowIndex+config.Config.BodyStartRow, r.minValue, r.maxValue)

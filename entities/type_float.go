@@ -2,11 +2,9 @@ package entities
 
 import (
 	"cfg_exporter/util"
-	"fmt"
 	"maps"
 	"reflect"
 	"strconv"
-	"strings"
 )
 
 type Float struct {
@@ -23,10 +21,9 @@ func init() {
 }
 
 func NewFloat(typeStr string) (ITypeSystem, error) {
-	args := util.SubArgs(typeStr, ",")
 	bit := "64"
-	if len(args) == 1 {
-		bit = args[0]
+	if param := util.SubParam(typeStr); param != "" {
+		bit = param
 	}
 	if bytes, ok := floatByteSizes[bit]; ok {
 		return &Float{BitSize: bytes}, nil
@@ -36,11 +33,15 @@ func NewFloat(typeStr string) (ITypeSystem, error) {
 	for k := range maps.Keys(floatByteSizes) {
 		l = append(l, k)
 	}
-	return nil, fmt.Errorf("类型格式错误 float|float(%s)", strings.Join(l, "|"))
+	return nil, ErrorTypeBaseInvalid(&Float{}, l)
 }
 
 func (f *Float) ParseString(str string) (any, error) {
-	return strconv.ParseFloat(str, f.BitSize)
+	float, err := strconv.ParseFloat(str, f.BitSize)
+	if err != nil {
+		return nil, ErrorTypeParseFailed(f, str)
+	}
+	return float, nil
 }
 
 func (f *Float) Convert(val any) string {

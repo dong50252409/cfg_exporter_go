@@ -31,7 +31,7 @@ func convert(data any) any {
 			if item == nil {
 				break
 			}
-			elements = append(elements, toString(item))
+			elements = append(elements, convert(item))
 		}
 		return elements
 	default:

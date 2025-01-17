@@ -17,8 +17,12 @@ func NewBoolean(_ string) (ITypeSystem, error) {
 	return t, nil
 }
 
-func (*Boolean) ParseString(str string) (any, error) {
-	return strconv.ParseBool(str)
+func (b *Boolean) ParseString(str string) (any, error) {
+	parseBool, err := strconv.ParseBool(str)
+	if err != nil {
+		return nil, ErrorTypeParseFailed(b, str)
+	}
+	return parseBool, nil
 }
 
 func (*Boolean) Convert(val any) string {

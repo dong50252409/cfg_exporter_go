@@ -18,11 +18,10 @@ func init() {
 }
 
 func newResource(_ *Table, field *Field, str string) error {
-	args := util.SubArgs(str, ",")
-	if len(args) == 1 {
+	if param := util.SubParam(str); param != "" {
 		if str != "" {
 			wd, _ := os.Getwd()
-			path := filepath.Join(wd, args[0])
+			path := filepath.Join(wd, param)
 			_, err := os.Stat(path)
 			if err != nil {
 				return fmt.Errorf("参数路径不存在 完整路径：%s", path)

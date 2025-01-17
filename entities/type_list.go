@@ -2,13 +2,15 @@ package entities
 
 import (
 	"cfg_exporter/util"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
 )
 
 type List struct {
-	ElementKind reflect.Kind
+	t         ITypeSystem
+	checkFunc func(any) bool
 }
 
 func init() {
@@ -16,28 +18,26 @@ func init() {
 }
 
 func NewList(typeStr string) (ITypeSystem, error) {
-	args := util.SubArgs(typeStr, ",")
-	switch len(args) {
-	case 0:
-		return &List{ElementKind: reflect.Interface}, nil
-	case 1:
-		t, err := NewType(args[0])
-		if err != nil {
-			return nil, err
+	if param := util.SubParam(typeStr); param == "" {
+		return &List{}, nil
+	} else {
+		t, err := NewType(param)
+		if errors.Is(err, ErrorTypeNotSupported) {
+			return nil, ErrorTypeListInvalid()
 		}
-		return &List{ElementKind: t.(ITypeSystem).GetKind()}, nil
+		return &List{t: t, checkFunc: checkFunc(t)}, nil
 	}
-	return nil, fmt.Errorf("类型格式错误 list|list(ElementType)")
 }
+
 func (l *List) ParseString(str string) (any, error) {
 	v, err := ParseString(str)
 	if err != nil {
-		return nil, err
+		return nil, ErrorTypeParseFailed(l, str)
 	}
-	if l.ElementKind != reflect.Interface {
+	if l.checkFunc != nil {
 		for i, e := range v.([]any) {
-			if l.ElementKind != reflect.TypeOf(e).Kind() {
-				return nil, fmt.Errorf("第 %d 个元素 %v 与泛型不匹配 list(%s)", i+1, e, l.ElementKind)
+			if !l.checkFunc(e) {
+				return nil, ErrorTypeNotMatch(l, i, e)
 			}
 		}
 	}

@@ -25,14 +25,14 @@ func GetKey(typeStr string) (string, string) {
 	}
 }
 
-func SubArgs(str string, sep string) []string {
+func SubParam(str string) string {
 	index := strings.Index(str, "(")
 	if index != -1 {
 		end := strings.LastIndex(str, ")")
 		if end == -1 {
-			return []string{}
+			return ""
 		}
-		return strings.Split(str[index+1:end], sep)
+		return str[index+1 : end]
 	}
-	return []string{}
+	return ""
 }

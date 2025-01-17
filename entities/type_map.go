@@ -2,14 +2,17 @@ package entities
 
 import (
 	"cfg_exporter/util"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
 )
 
 type Map struct {
-	KeyKind   reflect.Kind
-	ValueKind reflect.Kind
+	keyT           ITypeSystem
+	valueT         ITypeSystem
+	keyCheckFunc   func(any) bool
+	valueCheckFunc func(any) bool
 }
 
 func init() {
@@ -17,22 +20,23 @@ func init() {
 }
 
 func NewMap(typeStr string) (ITypeSystem, error) {
-	args := util.SubArgs(typeStr, ",")
-	switch len(args) {
-	case 0:
-		return &Map{KeyKind: reflect.Interface, ValueKind: reflect.Interface}, nil
-	case 2:
-		kT, err := NewType(args[0])
-		if err != nil {
-			return nil, err
+	if param := util.SubParam(typeStr); param == "" {
+		return &Map{}, nil
+	} else {
+		if l := strings.Split(param, ","); len(l) == 2 {
+			kT, err := NewType(l[0])
+			if errors.Is(err, ErrorTypeNotSupported) {
+				return nil, ErrorTypeMapInvalid()
+			}
+
+			vT, err := NewType(l[1])
+			if errors.Is(err, ErrorTypeNotSupported) {
+				return nil, ErrorTypeMapInvalid()
+			}
+			return &Map{keyT: kT, valueT: vT, keyCheckFunc: checkFunc(kT), valueCheckFunc: checkFunc(vT)}, nil
 		}
-		vT, err := NewType(args[1])
-		if err != nil {
-			return nil, err
-		}
-		return &Map{KeyKind: kT.(ITypeSystem).GetKind(), ValueKind: vT.(ITypeSystem).GetKind()}, nil
 	}
-	return nil, fmt.Errorf("类型格式错误 map|map(键元素类型, 值元素类型)")
+	return nil, ErrorTypeMapInvalid()
 }
 
 func (m *Map) ParseString(str string) (any, error) {
@@ -40,13 +44,13 @@ func (m *Map) ParseString(str string) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	if m.KeyKind != reflect.Interface {
-		for k, v := range v.(map[any]any) {
-			if m.KeyKind != reflect.TypeOf(k).Kind() {
-				return nil, fmt.Errorf("键:%v 与泛型不匹配 map(%s, %s)", k, m.KeyKind, m.ValueKind)
+	if m.keyCheckFunc != nil && m.valueCheckFunc != nil {
+		for key, val := range v.(map[any]any) {
+			if !m.keyCheckFunc(key) {
+				return nil, ErrorTypeMapKeyNotMatch(m, key)
 			}
-			if m.ValueKind != reflect.TypeOf(v).Kind() {
-				return nil, fmt.Errorf("值:%v 与泛型不匹配 map(%s, %s)", m, m.KeyKind, m.ValueKind)
+			if !m.valueCheckFunc(val) {
+				return nil, ErrorTypeMapValueNotMatch(m, val)
 			}
 		}
 	}

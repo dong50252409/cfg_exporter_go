@@ -4,6 +4,7 @@ import (
 	"cfg_exporter/config"
 	"cfg_exporter/util"
 	"fmt"
+	"strings"
 )
 
 type MacroDetail struct {
@@ -25,32 +26,32 @@ func init() {
 }
 
 func newMacro(tbl *Table, field *Field, str string) error {
-	args := util.SubArgs(str, ",")
-	if len(args) == 2 {
-		macroName, valueFieldName := args[0], args[1]
-		valueField := tbl.GetFieldByName(valueFieldName)
-		if valueField == nil {
-			return fmt.Errorf("%s 宏 %s 值字段不存在", macroName, valueFieldName)
+	if param := util.SubParam(str); param != "" {
+
+		if l := strings.Split(param, ","); len(l) == 2 {
+			macroName, valueFieldName := l[0], l[1]
+			valueField := tbl.GetFieldByName(valueFieldName)
+			if valueField == nil {
+				return fmt.Errorf("%s 宏 %s 值字段不存在", macroName, valueFieldName)
+			}
+
+			tbl.Decorators = append(tbl.Decorators, &Macro{MacroName: macroName, KeyField: field, ValueField: valueField})
+			return nil
+		} else if len(l) == 3 {
+			macroName, valueFieldName, commentFieldName := l[0], l[1], l[2]
+			valueField := tbl.GetFieldByName(valueFieldName)
+			if valueField == nil {
+				return fmt.Errorf("%s 宏 %s 值字段不存在", macroName, valueFieldName)
+			}
+
+			commentField := tbl.GetFieldByName(commentFieldName)
+			if commentField == nil {
+				return fmt.Errorf("%s 宏 %s 描述字段不存在", macroName, commentFieldName)
+			}
+
+			tbl.Decorators = append(tbl.Decorators, &Macro{MacroName: macroName, KeyField: field, ValueField: valueField, CommentField: commentField})
+			return nil
 		}
-
-		tbl.Decorators = append(tbl.Decorators, &Macro{MacroName: macroName, KeyField: field, ValueField: valueField})
-		return nil
-	}
-
-	if len(args) == 3 {
-		macroName, valueFieldName, commentFieldName := args[0], args[1], args[2]
-		valueField := tbl.GetFieldByName(valueFieldName)
-		if valueField == nil {
-			return fmt.Errorf("%s 宏 %s 值字段不存在", macroName, valueFieldName)
-		}
-
-		commentField := tbl.GetFieldByName(commentFieldName)
-		if commentField == nil {
-			return fmt.Errorf("%s 宏 %s 描述字段不存在", macroName, commentFieldName)
-		}
-
-		tbl.Decorators = append(tbl.Decorators, &Macro{MacroName: macroName, KeyField: field, ValueField: valueField, CommentField: commentField})
-		return nil
 	}
 	return fmt.Errorf("参数格式错误 macro(宏名,值字段名[,描述字段名])")
 }

@@ -2,13 +2,15 @@ package entities
 
 import (
 	"cfg_exporter/util"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
 )
 
 type Tuple struct {
-	ElementKind reflect.Kind
+	t         ITypeSystem
+	checkFunc func(any) bool
 }
 
 func init() {
@@ -16,33 +18,30 @@ func init() {
 }
 
 func NewTuple(typeStr string) (ITypeSystem, error) {
-	args := util.SubArgs(typeStr, ",")
-	switch len(args) {
-	case 0:
-		return &Tuple{ElementKind: reflect.Interface}, nil
-	case 1:
-		t, err := NewType(args[0])
-		if err != nil {
-			return nil, err
+	if param := util.SubParam(typeStr); param == "" {
+		return &Tuple{}, nil
+	} else {
+		t, err := NewType(param)
+		if errors.Is(err, ErrorTypeNotSupported) {
+			return nil, ErrorTypeTupleInvalid()
 		}
-		return &Tuple{ElementKind: t.(ITypeSystem).GetKind()}, nil
+		return &Tuple{t: t, checkFunc: checkFunc(t)}, nil
 	}
-	return nil, fmt.Errorf("类型格式错误 tuple|tuple(元素类型)")
 }
 
 func (t *Tuple) ParseString(str string) (any, error) {
 	v, err := ParseString(str)
 	if err != nil {
-		return nil, err
+		return nil, ErrorTypeParseFailed(t, str)
 	}
 	if v == nil {
 		return v, nil
 	}
-	if t.ElementKind != reflect.Interface {
+	if t.checkFunc != nil {
 		for i, e := range v.(TupleT) {
 			if e != nil {
-				if t.ElementKind != reflect.TypeOf(e).Kind() {
-					return nil, fmt.Errorf("第 %d 个元素 %v 与泛型不匹配 tuple(%s)", i+1, e, t.ElementKind)
+				if !t.checkFunc(e) {
+					return nil, ErrorTypeNotMatch(t, i, e)
 				}
 			} else {
 				break
@@ -65,13 +64,13 @@ func (*Tuple) Convert(val any) string {
 }
 
 func (t *Tuple) String() string {
-	return "array"
+	return "tuple"
 }
 
 func (t *Tuple) GetDefaultValue() string {
 	return "[]"
 }
 
-func (*Tuple) GetKind() reflect.Kind {
+func (t *Tuple) GetKind() reflect.Kind {
 	return reflect.Array
 }

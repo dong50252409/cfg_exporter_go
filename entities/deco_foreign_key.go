@@ -17,10 +17,8 @@ func init() {
 }
 
 func newForeignKey(_ *Table, field *Field, str string) error {
-	args := util.SubArgs(str, ",")
-	if len(args) == 2 {
-		l := strings.Split(str, ",")
-		if len(l) == 2 {
+	if param := util.SubParam(str); param != "" {
+		if l := strings.Split(param, ","); len(l) == 2 {
 			field.Decorators["f_key"] = &ForeignKey{TableName: l[0], FieldName: l[1]}
 			return nil
 		}
