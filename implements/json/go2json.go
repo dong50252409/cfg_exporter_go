@@ -3,26 +3,29 @@ package json
 import (
 	"cfg_exporter/entities"
 	"fmt"
+	"github.com/stoewer/go-strcase"
 	"strconv"
 )
 
 func convert(data any) any {
 	switch v := data.(type) {
-	case entities.RawT: // 处理原始值，在Erlang中就是atom
-		return v
-	case []interface{}: // 处理列表
+	case string:
+		return strcase.LowerCamelCase(v)
+	case entities.RawT:
+		return strcase.LowerCamelCase(string(v))
+	case []interface{}:
 		var elements []any
 		for _, item := range v {
 			elements = append(elements, convert(item))
 		}
 		return elements
-	case map[any]any: // 处理Map
+	case map[any]any:
 		elements := make(map[string]any, len(v))
 		for key, value := range v {
 			elements[toString(key)] = convert(value)
 		}
 		return elements
-	case entities.TupleT: // 处理数组
+	case entities.TupleT:
 		var elements []any
 		for _, item := range v {
 			if item == nil {

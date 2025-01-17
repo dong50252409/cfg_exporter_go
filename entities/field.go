@@ -13,6 +13,8 @@ type Field struct {
 	Comment string
 	// 装饰器
 	Decorators map[string]any
+	// 是否为主键
+	IsPrimaryKey bool
 	// 默认值
 	DefaultValue string
 }

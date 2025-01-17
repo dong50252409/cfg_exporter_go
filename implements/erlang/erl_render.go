@@ -16,8 +16,8 @@ type erlRender struct {
 const erlHeadTemplate = `
 {{- define "head" -}}
 %% Auto Create, Don't Edit
--module({{ .Table.ConfigName | toLower }}).
--include("{{ .Table.ConfigName | toLower }}.hrl").
+-module({{ .Table.ConfigName | toSnakeCase }}).
+-include("{{ .Table.ConfigName | toSnakeCase }}.hrl").
 -compile(export_all).
 -compile(nowarn_export_all).
 -compile({no_auto_import, [get/1]}).
@@ -38,9 +38,9 @@ const erlGetTemplate = `
 
 {{- range $rowIndex, $dataRow := $dataSet -}}
 get({{ index $pkValuesList $rowIndex | joinByComma }})->
-    #{{ $configName }}{
+    #{{ $configName | toSnakeCase }}{
         {{- range $fieldIndex, $field := $fields }}
-        {{ $field.Name }} = {{ index $dataRow $field.ColIndex | $field.Convert }}{{ if lt $fieldIndex $dsLastIndex }},{{ end }}
+        {{ $field.Name | toSnakeCase }} = {{ index $dataRow $field.ColIndex | $field.Convert }}{{ if lt $fieldIndex $dsLastIndex }},{{ end }}
         {{- end }}
     };
 {{ end -}}
@@ -112,5 +112,5 @@ func (r *erlRender) ExportDir() string {
 }
 
 func (r *erlRender) Filename() string {
-	return config.Config.Schema["erlang"].FilePrefix + r.Name + ".erl"
+	return strcase.SnakeCase(config.Config.Schema["erlang"].FilePrefix+r.Name) + ".erl"
 }

@@ -32,7 +32,6 @@ type Parser struct {
 var (
 	parserRegistry       = make(map[string]func(p *Parser) IParser)
 	splitMultiConsRegexp = regexp.MustCompile(`\r\n|\r|\n`)
-	tableNameRegexp      = regexp.MustCompile(`\(.*\)`)
 )
 
 // RegisterParser 注册解析器

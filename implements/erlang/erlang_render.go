@@ -45,5 +45,5 @@ func (r *erlangRender) Filename() string {
 }
 
 func (r *erlangRender) ConfigName() string {
-	return strcase.SnakeCase(config.Config.Schema["erlang"].RecordPrefix + r.Name)
+	return strcase.SnakeCase(config.Config.Schema["erlang"].TableNamePrefix + r.Name)
 }

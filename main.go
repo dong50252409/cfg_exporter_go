@@ -2,8 +2,9 @@ package main
 
 import (
 	"cfg_exporter/config"
-	_ "cfg_exporter/erlang"
-	_ "cfg_exporter/json"
+	_ "cfg_exporter/implements/erlang"
+	_ "cfg_exporter/implements/json"
+	_ "cfg_exporter/implements/typescript"
 	"cfg_exporter/parser"
 	"cfg_exporter/reader"
 	"cfg_exporter/render"

@@ -26,6 +26,7 @@ func newPrimaryKey(tbl *Table, field *Field, _ string) error {
 		pk = &PrimaryKey{}
 		tbl.Decorators = append(tbl.Decorators, pk)
 	}
+	field.IsPrimaryKey = true
 	pk.Fields = append(pk.Fields, field)
 	return nil
 }

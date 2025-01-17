@@ -16,18 +16,18 @@ type hrlRender struct {
 const hrlHeadTemplate = `
 {{- define "head" -}}
 %% Auto Create, Don't Edit
--ifndef({{ .Table.ConfigName | toUpper }}_HRL).
--define({{ .Table.ConfigName | toUpper }}_HRL, true).
+-ifndef({{ .Table.ConfigName | toUpperSnakeCase }}_HRL).
+-define({{ .Table.ConfigName | toUpperSnakeCase }}_HRL, true).
 {{- end -}}
 `
 
 const hrlRecordTemplate = `
 {{- define "record" -}}
--record({{.Table.ConfigName}}, {
-	{{- $lastIndex := len .Table.Fields | add -1 }}
-	{{- range $index, $field := .Table.Fields }}
-	{{ $field.Name }} = {{ $field.DefaultValue }} :: {{ $field.Type }}{{ if lt $index $lastIndex }},{{ end }}	% {{ $field.Comment }}
-	{{- end }}
+-record({{ .Table.ConfigName | toSnakeCase }}, {
+    {{- $lastIndex := len .Table.Fields | add -1 }}
+    {{- range $index, $field := .Table.Fields }}
+    {{ $field.Name | toSnakeCase }} = {{ $field.DefaultValue }} :: {{ $field.Type }}{{ if lt $index $lastIndex }},{{ end }}	% {{ $field.Comment }}
+    {{- end }}
 }).
 {{- end -}}
 `
@@ -37,7 +37,7 @@ const hrlMacroTemplate = `
 {{- range $_, $macro := .Table.GetMacroDecorators -}}
 %% {{ $macro.MacroName }}
 {{ range $_, $macroDetail := $macro.List -}}
--define({{ $macroDetail.Key | toUpper}}, {{ $macroDetail.Value }}).	  % {{ $macroDetail.Comment }}
+-define({{ $macroDetail.Key | toUpperSnakeCase }}, {{ $macroDetail.Value }}).	  % {{ $macroDetail.Comment }}
 {{ end }}
 {{ end -}}
 {{- end -}}
@@ -97,5 +97,5 @@ func (r *hrlRender) ExportDir() string {
 }
 
 func (r *hrlRender) Filename() string {
-	return config.Config.Schema["erlang"].FilePrefix + r.Name + ".hrl"
+	return strcase.SnakeCase(config.Config.Schema["erlang"].FilePrefix+r.Name) + ".hrl"
 }

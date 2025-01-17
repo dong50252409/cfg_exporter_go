@@ -26,10 +26,10 @@ type ImportExtension struct {
 }
 
 type Schema struct {
-	FieldNameRow int    `toml:"field_name_row"`
-	Destination  string `toml:"destination"`
-	FilePrefix   string `toml:"file_prefix"`
-	RecordPrefix string `toml:"record_prefix"`
+	FieldNameRow    int    `toml:"field_name_row"`
+	Destination     string `toml:"destination"`
+	FilePrefix      string `toml:"file_prefix"`
+	TableNamePrefix string `toml:"table_name_prefix"`
 }
 
 func (tc *TomlConfig) GetSchema(schemaName string) Schema {

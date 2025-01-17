@@ -1,16 +1,23 @@
 package entities
 
 import (
+	"github.com/stoewer/go-strcase"
 	"strings"
 	"text/template"
 )
 
 var FuncMap = template.FuncMap{
-	"toUpper":     strings.ToUpper,
-	"toLower":     strings.ToLower,
-	"add":         Add,
-	"seq":         Seq,
-	"joinByComma": JoinByComma,
+	"toUpper":          strings.ToUpper,
+	"toLower":          strings.ToLower,
+	"toSnakeCase":      strcase.SnakeCase,
+	"toUpperSnakeCase": strcase.UpperSnakeCase,
+	"toLowerCamelCase": strcase.LowerCamelCase,
+	"toUpperCamelCase": strcase.UpperCamelCase,
+	"toKebabCase":      strcase.KebabCase,
+	"toUpperKebabCase": strcase.UpperKebabCase,
+	"add":              Add,
+	"seq":              Seq,
+	"joinByComma":      JoinByComma,
 }
 
 // Add 两个数相加

@@ -19,6 +19,7 @@ destination = "./samples/json/"
 # 文件前缀
 file_prefix = "cfg_"
 
+
 # Erlang导出配置
 [schema.erlang]
 # 字段名行号
@@ -27,8 +28,8 @@ field_name_row = 5
 destination = "./samples/erlang/"
 # 文件前缀
 file_prefix = "cfg_"
-# record前缀
-record_prefix = "cfg_"
+# 表名前缀
+table_name_prefix = "cfg_"
 
 # typescript导出配置
 [schema.typescript]
@@ -36,3 +37,7 @@ record_prefix = "cfg_"
 field_name_row = 4
 # 导出目标路径
 destination = "./samples/typescript/"
+# 文件前缀
+file_prefix = "cfg_"
+# 表名前缀
+table_name_prefix = "cfg_"

@@ -46,7 +46,7 @@ func (r *jsonRender) Execute() error {
 			case "":
 				continue
 			default:
-				rowMap[field.Name] = convert(v)
+				rowMap[strcase.LowerCamelCase(field.Name)] = convert(v)
 			}
 		}
 		dataList = append(dataList, rowMap)
@@ -56,15 +56,15 @@ func (r *jsonRender) Execute() error {
 	for _, macro := range r.GetMacroDecorators() {
 		var childMacroMap = make(map[string]any)
 		for _, macroDetail := range macro.List {
-			childMacroMap[macroDetail.Key] = macroDetail.Value
+			childMacroMap[strcase.UpperSnakeCase(macroDetail.Key)] = macroDetail.Value
 		}
-		macroMap[macro.MacroName] = childMacroMap
+		macroMap[strcase.LowerCamelCase(macro.MacroName)] = childMacroMap
 	}
 
 	// 序列化为 JSON
 	jsonData, err := json.MarshalIndent(map[string]any{
-		"data_set":  dataList,
-		"macro_set": macroMap,
+		"dataSet":  dataList,
+		"macroSet": macroMap,
 	}, "", "    ")
 
 	if err != nil {
@@ -85,9 +85,9 @@ func (r *jsonRender) ExportDir() string {
 }
 
 func (r *jsonRender) Filename() string {
-	return config.Config.Schema["json"].FilePrefix + r.Name + ".json"
+	return strcase.UpperCamelCase(config.Config.Schema["json"].FilePrefix+r.Name) + ".json"
 }
 
 func (r *jsonRender) ConfigName() string {
-	return strcase.SnakeCase(config.Config.Schema["json"].RecordPrefix + r.Name)
+	return ""
 }
