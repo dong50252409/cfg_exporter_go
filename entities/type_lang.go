@@ -35,3 +35,14 @@ func (l *Lang) GetDefaultValue() string {
 func (l *Lang) GetKind() reflect.Kind {
 	return reflect.String
 }
+
+func (l *Lang) GetCheckFunc() func(any) bool {
+	return func(v any) bool {
+		_, ok := v.(string)
+		if !ok {
+			_, ok = v.(RawT)
+			return ok
+		}
+		return ok
+	}
+}

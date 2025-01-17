@@ -40,3 +40,7 @@ func (b *Boolean) GetDefaultValue() string {
 func (b *Boolean) GetKind() reflect.Kind {
 	return reflect.Bool
 }
+
+func (b *Boolean) GetCheckFunc() func(any) bool {
+	return func(v any) bool { _, ok := v.(bool); return ok }
+}

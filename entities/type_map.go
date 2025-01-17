@@ -33,7 +33,7 @@ func NewMap(typeStr string) (ITypeSystem, error) {
 			if errors.Is(err, ErrorTypeNotSupported) {
 				return nil, ErrorTypeMapInvalid()
 			}
-			return &Map{keyT: kT, valueT: vT, keyCheckFunc: checkFunc(kT), valueCheckFunc: checkFunc(vT)}, nil
+			return &Map{keyT: kT, valueT: vT}, nil
 		}
 	}
 	return nil, ErrorTypeMapInvalid()
@@ -44,12 +44,14 @@ func (m *Map) ParseString(str string) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	if m.keyCheckFunc != nil && m.valueCheckFunc != nil {
+	if m.keyT != nil && m.valueT != nil {
+		keyCheckFunc := m.keyT.GetCheckFunc()
+		valueCheckFunc := m.valueT.GetCheckFunc()
 		for key, val := range v.(map[any]any) {
-			if !m.keyCheckFunc(key) {
+			if !keyCheckFunc(key) {
 				return nil, ErrorTypeMapKeyNotMatch(m, key)
 			}
-			if !m.valueCheckFunc(val) {
+			if !valueCheckFunc(val) {
 				return nil, ErrorTypeMapValueNotMatch(m, val)
 			}
 		}
@@ -75,4 +77,21 @@ func (m *Map) GetDefaultValue() string {
 
 func (m *Map) GetKind() reflect.Kind {
 	return reflect.Map
+}
+
+func (m *Map) GetCheckFunc() func(any) bool {
+	keyCF := m.keyT.GetCheckFunc()
+	valueCF := m.valueT.GetCheckFunc()
+	return func(v any) bool {
+		v1, ok := v.(map[any]any)
+		if !ok {
+			return false
+		}
+		for key, val := range v1 {
+			if !keyCF(key) || !valueCF(val) {
+				return false
+			}
+		}
+		return true
+	}
 }

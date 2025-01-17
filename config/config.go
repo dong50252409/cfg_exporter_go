@@ -30,6 +30,7 @@ type Schema struct {
 	Destination     string `toml:"destination"`
 	FilePrefix      string `toml:"file_prefix"`
 	TableNamePrefix string `toml:"table_name_prefix"`
+	Namespace       string `toml:"namespace"`
 }
 
 func (tc *TomlConfig) GetSchema(schemaName string) Schema {

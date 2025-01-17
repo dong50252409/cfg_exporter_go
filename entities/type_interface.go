@@ -15,7 +15,11 @@ type ITypeSystem interface {
 	// GetDefaultValue 获取类型默认值字符串
 	GetDefaultValue() string
 
+	// GetKind 获取基本类型
 	GetKind() reflect.Kind
+
+	// GetCheckFunc 获取检查函数
+	GetCheckFunc() func(any) bool
 }
 
 // TupleT 元组 最多支持10个元素

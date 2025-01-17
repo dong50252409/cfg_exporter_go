@@ -3,6 +3,7 @@ package main
 import (
 	"cfg_exporter/config"
 	_ "cfg_exporter/implements/erlang"
+	_ "cfg_exporter/implements/flatbuffer"
 	_ "cfg_exporter/implements/json"
 	_ "cfg_exporter/implements/typescript"
 	"cfg_exporter/parser"

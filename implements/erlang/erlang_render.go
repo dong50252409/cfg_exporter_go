@@ -9,6 +9,7 @@ import (
 
 type erlangRender struct {
 	*entities.Table
+	schema config.Schema
 }
 
 func init() {
@@ -16,7 +17,7 @@ func init() {
 }
 
 func newErlangRender(table *entities.Table) render.IRender {
-	return &erlangRender{table}
+	return &erlangRender{table, config.Config.Schema["erlang"]}
 }
 
 func (r *erlangRender) Execute() error {
@@ -36,8 +37,7 @@ func (r *erlangRender) Execute() error {
 }
 
 func (r *erlangRender) ExportDir() string {
-	erlang := config.Config.Schema["erlang"]
-	return erlang.Destination
+	return r.schema.Destination
 }
 
 func (r *erlangRender) Filename() string {
@@ -45,5 +45,5 @@ func (r *erlangRender) Filename() string {
 }
 
 func (r *erlangRender) ConfigName() string {
-	return strcase.SnakeCase(config.Config.Schema["erlang"].TableNamePrefix + r.Name)
+	return strcase.SnakeCase(r.schema.TableNamePrefix + r.Name)
 }

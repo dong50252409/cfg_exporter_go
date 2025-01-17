@@ -3,6 +3,7 @@ package entities
 import (
 	"cfg_exporter/util"
 	"maps"
+	"math"
 	"reflect"
 	"strconv"
 )
@@ -80,5 +81,20 @@ func (i *Integer) GetKind() reflect.Kind {
 		return reflect.Int64
 	default:
 		return reflect.Int64
+	}
+}
+
+func (i *Integer) GetCheckFunc() func(any) bool {
+	switch i.BitSize {
+	case 8:
+		return func(v any) bool { return math.MinInt8 <= v.(int64) && v.(int64) <= math.MaxInt8 }
+	case 16:
+		return func(v any) bool { return math.MinInt16 <= v.(int64) && v.(int64) <= math.MaxInt16 }
+	case 32:
+		return func(v any) bool { return math.MinInt32 <= v.(int64) && v.(int64) <= math.MaxInt32 }
+	case 64:
+		return func(v any) bool { _, ok := v.(int64); return ok }
+	default:
+		return func(v any) bool { _, ok := v.(int64); return ok }
 	}
 }

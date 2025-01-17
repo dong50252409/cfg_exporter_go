@@ -11,15 +11,6 @@ field_decorator_row = 3
 # 主体数据起始行号
 body_start_row = 6
 
-[schema.json]
-# 字段名行号
-field_name_row = 4
-# 导出目标路径
-destination = "./samples/json/"
-# 文件前缀
-file_prefix = "cfg_"
-
-
 # Erlang导出配置
 [schema.erlang]
 # 字段名行号
@@ -41,3 +32,25 @@ destination = "./samples/typescript/"
 file_prefix = "cfg_"
 # 表名前缀
 table_name_prefix = "cfg_"
+
+# json导出配置
+[schema.json]
+# 字段名行号
+field_name_row = 4
+# 导出目标路径
+destination = "./samples/json/"
+# 文件前缀
+file_prefix = "cfg_"
+
+# flatbuffer导出配置
+[schema.flatbuffer]
+# 字段名行号
+field_name_row = 4
+# 导出目标路径
+destination = "./samples/flatbuffer/"
+# 文件前缀
+file_prefix = ""
+# 表名前缀
+table_name_prefix = ""
+# 命名空间
+namespace = "flatbuffer"

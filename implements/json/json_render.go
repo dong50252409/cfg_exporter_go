@@ -12,6 +12,7 @@ import (
 
 type jsonRender struct {
 	*entities.Table
+	schema config.Schema
 }
 
 func init() {
@@ -19,7 +20,7 @@ func init() {
 }
 
 func newJSONRender(table *entities.Table) render.IRender {
-	return &jsonRender{table}
+	return &jsonRender{table, config.Config.Schema["json"]}
 }
 
 func (r *jsonRender) Execute() error {
@@ -80,12 +81,11 @@ func (r *jsonRender) Execute() error {
 }
 
 func (r *jsonRender) ExportDir() string {
-	erlang := config.Config.Schema["json"]
-	return erlang.Destination
+	return r.schema.Destination
 }
 
 func (r *jsonRender) Filename() string {
-	return strcase.KebabCase(config.Config.Schema["json"].FilePrefix+r.Name) + ".json"
+	return strcase.KebabCase(r.schema.FilePrefix+r.Name) + ".json"
 }
 
 func (r *jsonRender) ConfigName() string {

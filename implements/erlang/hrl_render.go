@@ -1,7 +1,6 @@
 package erlang
 
 import (
-	"cfg_exporter/config"
 	"cfg_exporter/entities"
 	"github.com/stoewer/go-strcase"
 	"os"
@@ -97,5 +96,5 @@ func (r *hrlRender) ExportDir() string {
 }
 
 func (r *hrlRender) Filename() string {
-	return strcase.SnakeCase(config.Config.Schema["erlang"].FilePrefix+r.Name) + ".hrl"
+	return strcase.SnakeCase(r.schema.FilePrefix+r.Name) + ".hrl"
 }

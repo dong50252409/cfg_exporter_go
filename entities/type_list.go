@@ -25,7 +25,7 @@ func NewList(typeStr string) (ITypeSystem, error) {
 		if errors.Is(err, ErrorTypeNotSupported) {
 			return nil, ErrorTypeListInvalid()
 		}
-		return &List{t: t, checkFunc: checkFunc(t)}, nil
+		return &List{t: t}, nil
 	}
 }
 
@@ -34,9 +34,10 @@ func (l *List) ParseString(str string) (any, error) {
 	if err != nil {
 		return nil, ErrorTypeParseFailed(l, str)
 	}
-	if l.checkFunc != nil {
+	if l.t != nil {
+		checkFunc := l.t.GetCheckFunc()
 		for i, e := range v.([]any) {
-			if !l.checkFunc(e) {
+			if !checkFunc(e) {
 				return nil, ErrorTypeNotMatch(l, i, e)
 			}
 		}
@@ -62,4 +63,20 @@ func (l *List) GetDefaultValue() string {
 
 func (l *List) GetKind() reflect.Kind {
 	return reflect.Slice
+}
+
+func (l *List) GetCheckFunc() func(any) bool {
+	cf := l.t.GetCheckFunc()
+	return func(v any) bool {
+		v1, ok := v.([]any)
+		if !ok {
+			return false
+		}
+		for _, e := range v1 {
+			if !cf(e) {
+				return false
+			}
+		}
+		return true
+	}
 }

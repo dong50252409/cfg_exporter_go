@@ -1,4 +1,4 @@
-package erlang
+package typescript
 
 import (
 	"cfg_exporter/config"
@@ -48,6 +48,7 @@ const tsTemplate = `
 
 type tsRender struct {
 	*entities.Table
+	schema config.Schema
 }
 
 func init() {
@@ -55,7 +56,7 @@ func init() {
 }
 
 func newtsRender(table *entities.Table) render.IRender {
-	return &tsRender{table}
+	return &tsRender{table, config.Config.Schema["typescript"]}
 }
 
 func (r *tsRender) Execute() error {
@@ -93,14 +94,13 @@ func (r *tsRender) Execute() error {
 }
 
 func (r *tsRender) ExportDir() string {
-	erlang := config.Config.Schema["typescript"]
-	return erlang.Destination
+	return r.schema.Destination
 }
 
 func (r *tsRender) Filename() string {
-	return strcase.KebabCase(config.Config.Schema["typescript"].FilePrefix+r.Name) + ".ts"
+	return strcase.KebabCase(r.schema.FilePrefix+r.Name) + ".ts"
 }
 
 func (r *tsRender) ConfigName() string {
-	return config.Config.Schema["typescript"].TableNamePrefix + r.Name
+	return r.schema.TableNamePrefix + r.Name
 }

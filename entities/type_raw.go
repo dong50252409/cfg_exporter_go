@@ -16,7 +16,7 @@ func NewRaw(_ string) (ITypeSystem, error) {
 	return &Raw{}, nil
 }
 
-func (s *Raw) ParseString(str string) (any, error) {
+func (r *Raw) ParseString(str string) (any, error) {
 	return str, nil
 }
 
@@ -24,14 +24,25 @@ func (*Raw) Convert(val any) string {
 	return fmt.Sprintf("%v", val)
 }
 
-func (s *Raw) String() string {
+func (r *Raw) String() string {
 	return "raw"
 }
 
-func (s *Raw) GetDefaultValue() string {
+func (r *Raw) GetDefaultValue() string {
 	return "nil"
 }
 
-func (s *Raw) GetKind() reflect.Kind {
+func (r *Raw) GetKind() reflect.Kind {
 	return reflect.String
+}
+
+func (r *Raw) GetCheckFunc() func(any) bool {
+	return func(v any) bool {
+		_, ok := v.(string)
+		if !ok {
+			_, ok = v.(RawT)
+			return ok
+		}
+		return ok
+	}
 }

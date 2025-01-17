@@ -25,7 +25,7 @@ func NewTuple(typeStr string) (ITypeSystem, error) {
 		if errors.Is(err, ErrorTypeNotSupported) {
 			return nil, ErrorTypeTupleInvalid()
 		}
-		return &Tuple{t: t, checkFunc: checkFunc(t)}, nil
+		return &Tuple{t: t}, nil
 	}
 }
 
@@ -37,10 +37,11 @@ func (t *Tuple) ParseString(str string) (any, error) {
 	if v == nil {
 		return v, nil
 	}
-	if t.checkFunc != nil {
+	if t.t != nil {
+		checkFunc := t.t.GetCheckFunc()
 		for i, e := range v.(TupleT) {
 			if e != nil {
-				if !t.checkFunc(e) {
+				if !checkFunc(e) {
 					return nil, ErrorTypeNotMatch(t, i, e)
 				}
 			} else {
@@ -73,4 +74,23 @@ func (t *Tuple) GetDefaultValue() string {
 
 func (t *Tuple) GetKind() reflect.Kind {
 	return reflect.Array
+}
+
+func (t *Tuple) GetCheckFunc() func(any) bool {
+	cf := t.t.GetCheckFunc()
+	return func(v any) bool {
+		v1, ok := v.(TupleT)
+		if !ok {
+			return false
+		}
+		for _, e := range v1 {
+			if e == nil {
+				continue
+			}
+			if !cf(e) {
+				return false
+			}
+		}
+		return true
+	}
 }
