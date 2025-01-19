@@ -12,8 +12,8 @@ func init() {
 	typeRegister("float", newFloat)
 }
 
-func newFloat(typeStr string) (entities.ITypeSystem, error) {
-	float, err := entities.NewFloat(typeStr)
+func newFloat(typeStr string, field *entities.Field) (entities.ITypeSystem, error) {
+	float, err := entities.NewFloat(typeStr, field)
 	if err != nil {
 		return nil, err
 	}
@@ -21,5 +21,12 @@ func newFloat(typeStr string) (entities.ITypeSystem, error) {
 }
 
 func (f *FBFloat) String() string {
-	return "float64"
+	switch f.ITypeSystem.(*entities.Float).BitSize {
+	case 32:
+		return "float32"
+	case 64:
+		return "float64"
+	default:
+		return "float64"
+	}
 }

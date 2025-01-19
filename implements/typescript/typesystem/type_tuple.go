@@ -12,8 +12,8 @@ func init() {
 	typeRegister("tuple", newTuple)
 }
 
-func newTuple(typeStr string) (entities.ITypeSystem, error) {
-	tuple, err := entities.NewTuple(typeStr)
+func newTuple(typeStr string, field *entities.Field) (entities.ITypeSystem, error) {
+	tuple, err := entities.NewTuple(typeStr, field)
 	if err != nil {
 		return nil, err
 	}

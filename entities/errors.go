@@ -56,11 +56,11 @@ func ErrorTypeMapValueNotMatch(t ITypeSystem, val any) error {
 func formatTypeSign(t ITypeSystem) string {
 	switch t.(type) {
 	case *List:
-		return fmt.Sprintf("%s(%s)", t.String(), formatTypeSign(t.(*List).t))
+		return fmt.Sprintf("%s(%s)", t.String(), formatTypeSign(t.(*List).T))
 	case *Tuple:
-		return fmt.Sprintf("%s(%s)", t.String(), formatTypeSign(t.(*Tuple).t))
+		return fmt.Sprintf("%s(%s)", t.String(), formatTypeSign(t.(*Tuple).T))
 	case *Map:
-		return fmt.Sprintf("%s(%s,%s)", t.String(), formatTypeSign(t.(*Map).keyT), formatTypeSign(t.(*Map).valueT))
+		return fmt.Sprintf("%s(%s,%s)", t.String(), formatTypeSign(t.(*Map).KeyT), formatTypeSign(t.(*Map).ValueT))
 	default:
 		return t.String()
 	}

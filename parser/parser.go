@@ -145,7 +145,7 @@ func (p *Parser) Parse() error {
 func (*Parser) ParseFieldType(field *entities.Field, ftRow []string) error {
 	val := strings.TrimSpace(ftRow[field.Column])
 	if val != "" {
-		t, err := entities.NewType(val)
+		t, err := entities.NewType(val, field)
 		if err != nil {
 			return fmt.Errorf("字段：%s 类型：%s %s", field.Name, val, err)
 		}

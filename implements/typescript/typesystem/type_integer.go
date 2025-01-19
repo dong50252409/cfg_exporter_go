@@ -12,8 +12,8 @@ func init() {
 	typeRegister("int", newInteger)
 }
 
-func newInteger(typeStr string) (entities.ITypeSystem, error) {
-	integer, err := entities.NewInteger(typeStr)
+func newInteger(typeStr string, field *entities.Field) (entities.ITypeSystem, error) {
+	integer, err := entities.NewInteger(typeStr, field)
 	if err != nil {
 		return nil, err
 	}

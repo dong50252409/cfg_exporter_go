@@ -9,6 +9,7 @@ import (
 )
 
 type Float struct {
+	Field   *Field
 	BitSize int
 }
 
@@ -21,13 +22,13 @@ func init() {
 	TypeRegister("float", NewFloat)
 }
 
-func NewFloat(typeStr string) (ITypeSystem, error) {
+func NewFloat(typeStr string, field *Field) (ITypeSystem, error) {
 	bit := "64"
 	if param := util.SubParam(typeStr); param != "" {
 		bit = param
 	}
 	if bytes, ok := floatByteSizes[bit]; ok {
-		return &Float{BitSize: bytes}, nil
+		return &Float{Field: field, BitSize: bytes}, nil
 	}
 
 	l := make([]string, 0, len(floatByteSizes))

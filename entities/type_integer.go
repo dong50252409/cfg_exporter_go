@@ -9,6 +9,7 @@ import (
 )
 
 type Integer struct {
+	Field   *Field
 	BitSize int
 }
 
@@ -23,13 +24,13 @@ func init() {
 	TypeRegister("int", NewInteger)
 }
 
-func NewInteger(typeStr string) (ITypeSystem, error) {
+func NewInteger(typeStr string, field *Field) (ITypeSystem, error) {
 	bit := "64"
 	if param := util.SubParam(typeStr); param != "" {
 		bit = param
 	}
 	if bytes, ok := intByteSizes[bit]; ok {
-		return &Integer{BitSize: bytes}, nil
+		return &Integer{Field: field, BitSize: bytes}, nil
 	}
 
 	l := make([]string, 0, len(intByteSizes))

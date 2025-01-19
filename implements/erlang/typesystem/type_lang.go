@@ -13,8 +13,8 @@ func init() {
 	typeRegister("lang", newLang)
 }
 
-func newLang(typeStr string) (entities.ITypeSystem, error) {
-	lang, err := entities.NewLang(typeStr)
+func newLang(typeStr string, field *entities.Field) (entities.ITypeSystem, error) {
+	lang, err := entities.NewLang(typeStr, field)
 	if err != nil {
 		return nil, err
 	}

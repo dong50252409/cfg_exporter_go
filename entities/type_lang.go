@@ -6,14 +6,15 @@ import (
 )
 
 type Lang struct {
+	Field *Field
 }
 
 func init() {
 	TypeRegister("lang", NewLang)
 }
 
-func NewLang(_ string) (ITypeSystem, error) {
-	return &Lang{}, nil
+func NewLang(_ string, field *Field) (ITypeSystem, error) {
+	return &Lang{Field: field}, nil
 }
 
 func (l *Lang) ParseString(str string) (any, error) {

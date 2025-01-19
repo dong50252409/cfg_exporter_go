@@ -9,31 +9,30 @@ import (
 )
 
 type Map struct {
-	keyT           ITypeSystem
-	valueT         ITypeSystem
-	keyCheckFunc   func(any) bool
-	valueCheckFunc func(any) bool
+	Field  *Field
+	KeyT   ITypeSystem
+	ValueT ITypeSystem
 }
 
 func init() {
 	TypeRegister("map", NewMap)
 }
 
-func NewMap(typeStr string) (ITypeSystem, error) {
+func NewMap(typeStr string, field *Field) (ITypeSystem, error) {
 	if param := util.SubParam(typeStr); param == "" {
-		return &Map{}, nil
+		return &Map{Field: field}, nil
 	} else {
 		if l := strings.Split(param, ","); len(l) == 2 {
-			kT, err := NewType(l[0])
+			kT, err := NewType(l[0], field)
 			if errors.Is(err, ErrorTypeNotSupported) {
 				return nil, ErrorTypeMapInvalid()
 			}
 
-			vT, err := NewType(l[1])
+			vT, err := NewType(l[1], field)
 			if errors.Is(err, ErrorTypeNotSupported) {
 				return nil, ErrorTypeMapInvalid()
 			}
-			return &Map{keyT: kT, valueT: vT}, nil
+			return &Map{Field: field, KeyT: kT, ValueT: vT}, nil
 		}
 	}
 	return nil, ErrorTypeMapInvalid()
@@ -44,9 +43,9 @@ func (m *Map) ParseString(str string) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	if m.keyT != nil && m.valueT != nil {
-		keyCheckFunc := m.keyT.GetCheckFunc()
-		valueCheckFunc := m.valueT.GetCheckFunc()
+	if m.KeyT != nil && m.ValueT != nil {
+		keyCheckFunc := m.KeyT.GetCheckFunc()
+		valueCheckFunc := m.ValueT.GetCheckFunc()
 		for key, val := range v.(map[any]any) {
 			if !keyCheckFunc(key) {
 				return nil, ErrorTypeMapKeyNotMatch(m, key)
@@ -80,8 +79,8 @@ func (m *Map) GetKind() reflect.Kind {
 }
 
 func (m *Map) GetCheckFunc() func(any) bool {
-	keyCF := m.keyT.GetCheckFunc()
-	valueCF := m.valueT.GetCheckFunc()
+	keyCF := m.KeyT.GetCheckFunc()
+	valueCF := m.ValueT.GetCheckFunc()
 	return func(v any) bool {
 		v1, ok := v.(map[any]any)
 		if !ok {

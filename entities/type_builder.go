@@ -5,12 +5,12 @@ import (
 )
 
 var (
-	typeRegistry     = make(map[string]func(typeStr string) (ITypeSystem, error))
-	baseTypeRegistry = make(map[string]func(typeStr string) (ITypeSystem, error))
+	typeRegistry     = make(map[string]func(typeStr string, field *Field) (ITypeSystem, error))
+	baseTypeRegistry = make(map[string]func(typeStr string, field *Field) (ITypeSystem, error))
 )
 
 // TypeRegister 类型注册器
-func TypeRegister(key string, cls func(typeStr string) (ITypeSystem, error)) {
+func TypeRegister(key string, cls func(typeStr string, field *Field) (ITypeSystem, error)) {
 	typeRegistry[key] = cls
 	baseTypeRegistry[key] = cls
 }
@@ -23,16 +23,16 @@ func RecoverBaseTypeRegister() {
 }
 
 // MergerTypeRegistry 合并当前的类型注册器
-func MergerTypeRegistry(registry map[string]func(typeStr string) (ITypeSystem, error)) {
+func MergerTypeRegistry(registry map[string]func(typeStr string, field *Field) (ITypeSystem, error)) {
 	for k, v := range registry {
 		typeRegistry[k] = v
 	}
 }
 
-func NewType(typeStr string) (ITypeSystem, error) {
+func NewType(typeStr string, field *Field) (ITypeSystem, error) {
 	key, args := util.GetKey(typeStr)
 	if cls, ok := typeRegistry[key]; ok {
-		return cls(args)
+		return cls(args, field)
 	}
 	return nil, errorTypeNotSupported(key)
 }

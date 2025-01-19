@@ -6,14 +6,15 @@ import (
 )
 
 type Boolean struct {
+	Field *Field
 }
 
 func init() {
 	TypeRegister("bool", NewBoolean)
 }
 
-func NewBoolean(_ string) (ITypeSystem, error) {
-	t := &Boolean{}
+func NewBoolean(_ string, field *Field) (ITypeSystem, error) {
+	t := &Boolean{Field: field}
 	return t, nil
 }
 

@@ -9,23 +9,23 @@ import (
 )
 
 type Tuple struct {
-	t         ITypeSystem
-	checkFunc func(any) bool
+	Field *Field
+	T     ITypeSystem
 }
 
 func init() {
 	TypeRegister("tuple", NewTuple)
 }
 
-func NewTuple(typeStr string) (ITypeSystem, error) {
+func NewTuple(typeStr string, field *Field) (ITypeSystem, error) {
 	if param := util.SubParam(typeStr); param == "" {
-		return &Tuple{}, nil
+		return &Tuple{Field: field}, nil
 	} else {
-		t, err := NewType(param)
+		t, err := NewType(param, field)
 		if errors.Is(err, ErrorTypeNotSupported) {
 			return nil, ErrorTypeTupleInvalid()
 		}
-		return &Tuple{t: t}, nil
+		return &Tuple{Field: field, T: t}, nil
 	}
 }
 
@@ -37,8 +37,8 @@ func (t *Tuple) ParseString(str string) (any, error) {
 	if v == nil {
 		return v, nil
 	}
-	if t.t != nil {
-		checkFunc := t.t.GetCheckFunc()
+	if t.T != nil {
+		checkFunc := t.T.GetCheckFunc()
 		for i, e := range v.(TupleT) {
 			if e != nil {
 				if !checkFunc(e) {
@@ -77,7 +77,7 @@ func (t *Tuple) GetKind() reflect.Kind {
 }
 
 func (t *Tuple) GetCheckFunc() func(any) bool {
-	cf := t.t.GetCheckFunc()
+	cf := t.T.GetCheckFunc()
 	return func(v any) bool {
 		v1, ok := v.(TupleT)
 		if !ok {

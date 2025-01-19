@@ -9,23 +9,23 @@ import (
 )
 
 type List struct {
-	t         ITypeSystem
-	checkFunc func(any) bool
+	Field *Field
+	T     ITypeSystem
 }
 
 func init() {
 	TypeRegister("list", NewList)
 }
 
-func NewList(typeStr string) (ITypeSystem, error) {
+func NewList(typeStr string, field *Field) (ITypeSystem, error) {
 	if param := util.SubParam(typeStr); param == "" {
 		return &List{}, nil
 	} else {
-		t, err := NewType(param)
+		t, err := NewType(param, field)
 		if errors.Is(err, ErrorTypeNotSupported) {
 			return nil, ErrorTypeListInvalid()
 		}
-		return &List{t: t}, nil
+		return &List{Field: field, T: t}, nil
 	}
 }
 
@@ -34,8 +34,8 @@ func (l *List) ParseString(str string) (any, error) {
 	if err != nil {
 		return nil, ErrorTypeParseFailed(l, str)
 	}
-	if l.t != nil {
-		checkFunc := l.t.GetCheckFunc()
+	if l.T != nil {
+		checkFunc := l.T.GetCheckFunc()
 		for i, e := range v.([]any) {
 			if !checkFunc(e) {
 				return nil, ErrorTypeNotMatch(l, i, e)
@@ -66,7 +66,7 @@ func (l *List) GetKind() reflect.Kind {
 }
 
 func (l *List) GetCheckFunc() func(any) bool {
-	cf := l.t.GetCheckFunc()
+	cf := l.T.GetCheckFunc()
 	return func(v any) bool {
 		v1, ok := v.([]any)
 		if !ok {

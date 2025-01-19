@@ -3,6 +3,7 @@ package flatbuffer
 import (
 	"cfg_exporter/config"
 	"cfg_exporter/entities"
+	"cfg_exporter/implements/flatbuffer/typesystem"
 	"cfg_exporter/render"
 	"github.com/stoewer/go-strcase"
 	"os"
@@ -14,6 +15,18 @@ type fbRender struct {
 	*entities.Table
 	schema config.Schema
 }
+
+const entryTemplate = `
+{{- define "entry" -}}
+{{- range $tableName, $fields := .Table.GetEntries -}}
+table {{ $tableName | toUpperCamelCase }}{
+	{{- range $fieldName, $fieldType := $fields }}
+	{{ $fieldName | toLowerCamelCase }}: {{ $fieldType }};
+	{{- end }}
+}
+{{- end -}}
+{{- end -}}
+`
 
 const dataSetTemplate = `
 {{- define "dataSet" -}}
@@ -36,7 +49,9 @@ root_type Root;
 `
 
 const fbTemplate = `
-namespace {{ .Table.Namespace }};
+{{- "namespace" }} {{ .Table.Namespace }};
+
+{{ template "entry" . }}
 
 {{ template "dataSet" . }}
 
@@ -70,7 +85,7 @@ func (r *fbRender) Execute() error {
 	// 解析模板字符串
 	tmpl := template.New("fb").Funcs(entities.FuncMap)
 
-	for _, tmplStr := range []string{dataSetTemplate, tailTemplate, fbTemplate} {
+	for _, tmplStr := range []string{entryTemplate, dataSetTemplate, tailTemplate, fbTemplate} {
 		tmpl, err = tmpl.Parse(tmplStr)
 		if err != nil {
 			return err
@@ -99,4 +114,66 @@ func (r *fbRender) ConfigName() string {
 
 func (r *fbRender) Namespace() string {
 	return r.schema.Namespace
+}
+
+func (r *fbRender) GetEntries() any {
+	var entries map[string]any
+	for _, field := range r.Table.Fields {
+		switch field.Type.(type) {
+		case *typesystem.FBList:
+			switch field.Type.(*typesystem.FBList).ITypeSystem.(*entities.List).T.(type) {
+			case *typesystem.FBInteger, *typesystem.FBFloat, *typesystem.FBBoolean, *typesystem.FBStr, *typesystem.FBLang, *typesystem.FBRaw:
+				continue
+			default:
+				switch m := r.GetEntries(); m.(type) {
+				case map[string]string:
+					// 返回的字段名和字段类型
+					entries[field.Name] = m
+				case map[string]map[string]string:
+					// 返回的表和表所包含的字段和字段类型
+					for k, v := range m.(map[string]map[string]string) {
+						entries[k] = v
+					}
+				}
+			}
+		case *typesystem.FBTuple:
+			switch field.Type.(*typesystem.FBTuple).ITypeSystem.(*entities.Tuple).T.(type) {
+			case *typesystem.FBInteger, *typesystem.FBFloat, *typesystem.FBBoolean, *typesystem.FBStr, *typesystem.FBLang, *typesystem.FBRaw:
+				continue
+			default:
+				switch m := r.GetEntries(); m.(type) {
+				case map[string]string:
+					// 返回的字段名和字段类型
+					entries[field.Name] = m
+				case map[string]map[string]string:
+					// 返回的表和表所包含的字段和字段类型
+					for k, v := range m.(map[string]map[string]string) {
+						entries[k] = v
+					}
+				}
+			}
+		case *typesystem.FBMap:
+			switch field.Type.(*typesystem.FBMap).ITypeSystem.(*entities.Map).ValueT.(type) {
+			case *typesystem.FBInteger, *typesystem.FBFloat, *typesystem.FBBoolean, *typesystem.FBStr, *typesystem.FBLang, *typesystem.FBRaw:
+				return map[string]string{
+					"k": field.Type.(*typesystem.FBMap).ITypeSystem.(*entities.Map).KeyT.String(),
+					"v": field.Type.(*typesystem.FBMap).ITypeSystem.(*entities.Map).ValueT.String(),
+				}
+			default:
+				switch m := r.GetEntries(); m.(type) {
+				case map[string]string:
+					// 返回的字段名和字段类型
+					entries[field.Name] = m
+				case map[string]map[string]string:
+					// 返回的表和表所包含的字段和字段类型
+					for k, v := range m.(map[string]map[string]string) {
+						entries[k] = v
+					}
+				}
+			}
+		default:
+			continue
+		}
+	}
+	return entries
 }

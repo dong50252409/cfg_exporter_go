@@ -6,14 +6,15 @@ import (
 )
 
 type Str struct {
+	Field *Field
 }
 
 func init() {
 	TypeRegister("str", NewStr)
 }
 
-func NewStr(_ string) (ITypeSystem, error) {
-	return &Str{}, nil
+func NewStr(_ string, field *Field) (ITypeSystem, error) {
+	return &Str{Field: field}, nil
 }
 
 func (s *Str) ParseString(str string) (any, error) {

@@ -12,8 +12,8 @@ func init() {
 	typeRegister("bool", newBoolean)
 }
 
-func newBoolean(typeStr string) (entities.ITypeSystem, error) {
-	boolean, err := entities.NewBoolean(typeStr)
+func newBoolean(typeStr string, field *entities.Field) (entities.ITypeSystem, error) {
+	boolean, err := entities.NewBoolean(typeStr, field)
 	if err != nil {
 		return nil, err
 	}

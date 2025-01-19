@@ -12,8 +12,8 @@ func init() {
 	typeRegister("list", newList)
 }
 
-func newList(typeStr string) (entities.ITypeSystem, error) {
-	list, err := entities.NewList(typeStr)
+func newList(typeStr string, field *entities.Field) (entities.ITypeSystem, error) {
+	list, err := entities.NewList(typeStr, field)
 	if err != nil {
 		return nil, err
 	}
