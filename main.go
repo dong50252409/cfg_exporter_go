@@ -17,7 +17,7 @@ import (
 func main() {
 	flag.Parse()
 
-	if flag.NFlag() == 0 || Help {
+	if flag.NFlag() == 0 || config.Help {
 		flag.Usage()
 		return
 	}
@@ -42,7 +42,7 @@ func run(path string) error {
 		return nil
 	}
 
-	p, err := parser.NewParser(SchemaName)
+	p, err := parser.NewParser(config.SchemaName)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func run(path string) error {
 		return err
 	}
 
-	if err = render.ToFile(SchemaName, t); err != nil {
+	if err = render.ToFile(config.SchemaName, t); err != nil {
 		return err
 	}
 

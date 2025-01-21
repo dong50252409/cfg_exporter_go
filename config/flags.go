@@ -1,7 +1,6 @@
-package main
+package config
 
 import (
-	"cfg_exporter/config"
 	"flag"
 	"fmt"
 	"os"
@@ -24,7 +23,7 @@ func init() {
 func usage() {
 	var supportedSchema []string
 
-	for key, _ := range config.Config.Schema {
+	for key := range Config.Schema {
 		supportedSchema = append(supportedSchema, key)
 	}
 	if _, err := fmt.Fprintf(os.Stdout, `cfg_exporter version: 0.0.1
