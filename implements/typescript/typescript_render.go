@@ -65,8 +65,8 @@ func (r *tsRender) Execute() error {
 		return err
 	}
 
-	tsFilepath := filepath.Join(dir, r.Filename())
-	fileIO, err := os.Create(tsFilepath)
+	fp := filepath.Join(dir, r.Filename())
+	fileIO, err := os.Create(fp)
 	if err != nil {
 		return err
 	}

@@ -7,30 +7,41 @@ import (
 )
 
 // ErrorTypeNotSupported 类型不支持
-var ErrorTypeNotSupported = errors.New("%s 不支持的类型")
+var ErrorTypeNotSupported error
 
 func errorTypeNotSupported(typeStr string) error {
-	return fmt.Errorf(ErrorTypeNotSupported.Error(), typeStr)
+	ErrorTypeNotSupported = errors.New(fmt.Sprintf("%s 不支持的类型", typeStr))
+	return ErrorTypeNotSupported
 }
 
 // ErrorTypeBaseInvalid 类型格式错误
 func ErrorTypeBaseInvalid(t ITypeSystem, lst []string) error {
-	return fmt.Errorf("类型格式错误 %s|%s(%s)", t.String(), t.String(), strings.Join(lst, "|"))
+	return fmt.Errorf("格式错误 %s|%s(%s)", t.String(), t.String(), strings.Join(lst, "|"))
 }
 
 // ErrorTypeListInvalid 类型格式错误
-func ErrorTypeListInvalid() error {
-	return fmt.Errorf("类型格式错误 list|list(元素类型)")
+func ErrorTypeListInvalid(typeStr string) error {
+	return fmt.Errorf("格式错误 list%s", typeStr)
 }
 
 // ErrorTypeTupleInvalid 元组类型格式错误
-func ErrorTypeTupleInvalid() error {
-	return fmt.Errorf("类型格式错误 tuple|tuple(元素类型)")
+func ErrorTypeTupleInvalid(typeStr string) error {
+	return fmt.Errorf("格式错误 tuple%s", typeStr)
+}
+
+// ErrorTypeMapKeyInvalid 字典类型格式错误
+func ErrorTypeMapKeyInvalid(typeStr string) error {
+	return fmt.Errorf("格式错误 map(%s, ...)", typeStr)
+}
+
+// ErrorTypeMapValueInvalid 字典类型格式错误
+func ErrorTypeMapValueInvalid(typeStr string) error {
+	return fmt.Errorf("键格式错误 map(..., %s)", typeStr)
 }
 
 // ErrorTypeMapInvalid 字典类型格式错误
-func ErrorTypeMapInvalid() error {
-	return fmt.Errorf("类型格式错误 map|map(键元素类型, 值元素类型)")
+func ErrorTypeMapInvalid(typeStr string) error {
+	return fmt.Errorf("值格式错误 %s", typeStr)
 }
 
 // ErrorTypeParseFailed 类型解析失败

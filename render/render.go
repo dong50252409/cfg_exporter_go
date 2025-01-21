@@ -22,7 +22,7 @@ func Register(key string, cls func(tbl *entities.Table) IRender) {
 func ToFile(schemaName string, table *entities.Table) error {
 	cls, ok := renderRegistry[schemaName]
 	if !ok {
-		panic(fmt.Sprintf("配置表：%s 渲染模板：%s 还没有被支持", table.Filename, schemaName))
+		return fmt.Errorf("配置表：%s 渲染模板：%s 还没有被支持", table.Filename, schemaName)
 	}
 	r := cls(table)
 	dir := r.ExportDir()

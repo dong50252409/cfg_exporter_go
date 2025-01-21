@@ -1,4 +1,4 @@
-package json
+package flatbuffer
 
 import (
 	"cfg_exporter/entities"

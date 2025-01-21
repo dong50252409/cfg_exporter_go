@@ -77,8 +77,8 @@ func (r *erlRender) Execute() error {
 		return err
 	}
 
-	erlFilepath := filepath.Join(erlDir, r.Filename())
-	fileIO, err := os.Create(erlFilepath)
+	fp := filepath.Join(erlDir, r.Filename())
+	fileIO, err := os.Create(fp)
 	if err != nil {
 		return err
 	}

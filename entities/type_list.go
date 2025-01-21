@@ -19,11 +19,14 @@ func init() {
 
 func NewList(typeStr string, field *Field) (ITypeSystem, error) {
 	if param := util.SubParam(typeStr); param == "" {
-		return &List{}, nil
+		return &List{Field: field}, nil
 	} else {
 		t, err := NewType(param, field)
-		if errors.Is(err, ErrorTypeNotSupported) {
-			return nil, ErrorTypeListInvalid()
+		if err != nil {
+			if errors.Is(err, ErrorTypeNotSupported) {
+				return nil, ErrorTypeListInvalid(typeStr)
+			}
+			return nil, err
 		}
 		return &List{Field: field, T: t}, nil
 	}

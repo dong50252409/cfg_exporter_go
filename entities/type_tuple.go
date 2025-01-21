@@ -22,8 +22,11 @@ func NewTuple(typeStr string, field *Field) (ITypeSystem, error) {
 		return &Tuple{Field: field}, nil
 	} else {
 		t, err := NewType(param, field)
-		if errors.Is(err, ErrorTypeNotSupported) {
-			return nil, ErrorTypeTupleInvalid()
+		if err != nil {
+			if errors.Is(err, ErrorTypeNotSupported) {
+				return nil, ErrorTypeTupleInvalid(typeStr)
+			}
+			return nil, err
 		}
 		return &Tuple{Field: field, T: t}, nil
 	}

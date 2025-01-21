@@ -70,7 +70,10 @@ func (f *Float) GetKind() reflect.Kind {
 
 func (f *Float) GetCheckFunc() func(any) bool {
 	if f.BitSize == 32 {
-		return func(v any) bool { return math.SmallestNonzeroFloat32 <= v.(float64) && v.(float64) <= math.MaxFloat32 }
+		return func(v any) bool {
+			v1, ok := v.(float64)
+			return ok && math.SmallestNonzeroFloat32 <= v1 && v1 <= math.MaxFloat32
+		}
 	}
 	return func(v any) bool { _, ok := v.(float64); return ok }
 }

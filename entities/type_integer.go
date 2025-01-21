@@ -88,11 +88,20 @@ func (i *Integer) GetKind() reflect.Kind {
 func (i *Integer) GetCheckFunc() func(any) bool {
 	switch i.BitSize {
 	case 8:
-		return func(v any) bool { return math.MinInt8 <= v.(int64) && v.(int64) <= math.MaxInt8 }
+		return func(v any) bool {
+			v1, ok := v.(int64)
+			return ok && math.MinInt8 <= v1 && v1 <= math.MaxInt8
+		}
 	case 16:
-		return func(v any) bool { return math.MinInt16 <= v.(int64) && v.(int64) <= math.MaxInt16 }
+		return func(v any) bool {
+			v1, ok := v.(int64)
+			return ok && math.MinInt16 <= v1 && v1 <= math.MaxInt16
+		}
 	case 32:
-		return func(v any) bool { return math.MinInt32 <= v.(int64) && v.(int64) <= math.MaxInt32 }
+		return func(v any) bool {
+			v1, ok := v.(int64)
+			return ok && math.MinInt32 <= v1 && v1 <= math.MaxInt32
+		}
 	case 64:
 		return func(v any) bool { _, ok := v.(int64); return ok }
 	default:

@@ -63,8 +63,9 @@ func (r *hrlRender) Execute() error {
 	if err := os.MkdirAll(hrlDir, os.ModePerm); err != nil {
 		return err
 	}
-	hrlFilepath := filepath.Join(hrlDir, r.Filename())
-	fileIO, err := os.Create(hrlFilepath)
+
+	fp := filepath.Join(hrlDir, r.Filename())
+	fileIO, err := os.Create(fp)
 	if err != nil {
 		return err
 	}

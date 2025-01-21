@@ -22,20 +22,26 @@ func NewMap(typeStr string, field *Field) (ITypeSystem, error) {
 	if param := util.SubParam(typeStr); param == "" {
 		return &Map{Field: field}, nil
 	} else {
-		if l := strings.Split(param, ","); len(l) == 2 {
+		if l := strings.SplitN(param, ",", 2); len(l) == 2 {
 			kT, err := NewType(l[0], field)
-			if errors.Is(err, ErrorTypeNotSupported) {
-				return nil, ErrorTypeMapInvalid()
+			if err != nil {
+				if errors.Is(err, ErrorTypeNotSupported) {
+					return nil, ErrorTypeMapKeyInvalid(l[0])
+				}
+				return nil, err
 			}
 
 			vT, err := NewType(l[1], field)
-			if errors.Is(err, ErrorTypeNotSupported) {
-				return nil, ErrorTypeMapInvalid()
+			if err != nil {
+				if errors.Is(err, ErrorTypeNotSupported) {
+					return nil, ErrorTypeMapValueInvalid(l[1])
+				}
+				return nil, err
 			}
 			return &Map{Field: field, KeyT: kT, ValueT: vT}, nil
 		}
 	}
-	return nil, ErrorTypeMapInvalid()
+	return nil, ErrorTypeMapInvalid(typeStr)
 }
 
 func (m *Map) ParseString(str string) (any, error) {

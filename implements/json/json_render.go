@@ -47,7 +47,10 @@ func (r *jsonRender) Execute() error {
 			case "":
 				continue
 			default:
-				rowMap[strcase.LowerCamelCase(field.Name)] = convert(v)
+				v1 := convert(v)
+				if v1 != nil {
+					rowMap[strcase.LowerCamelCase(field.Name)] = v1
+				}
 			}
 		}
 		dataList = append(dataList, rowMap)
@@ -62,11 +65,15 @@ func (r *jsonRender) Execute() error {
 		macroMap[strcase.LowerCamelCase(macro.MacroName)] = childMacroMap
 	}
 
+	rootMap := map[string]any{
+		"dataSet": dataList,
+	}
+	if len(macroMap) > 0 {
+		rootMap["macroSet"] = macroMap
+	}
+
 	// 序列化为 JSON
-	jsonData, err := json.MarshalIndent(map[string]any{
-		"dataSet":  dataList,
-		"macroSet": macroMap,
-	}, "", "    ")
+	jsonData, err := json.MarshalIndent(rootMap, "", "    ")
 
 	if err != nil {
 		return err

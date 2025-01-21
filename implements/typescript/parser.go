@@ -3,7 +3,7 @@ package typescript
 import (
 	"cfg_exporter/config"
 	"cfg_exporter/entities"
-	"cfg_exporter/implements/typescript/typesystem"
+	"cfg_exporter/implements/typescript/ts_type"
 	"cfg_exporter/parser"
 )
 
@@ -17,7 +17,7 @@ func init() {
 
 func NewParser(p *parser.Parser) parser.IParser {
 	// 用TypeScript类型覆盖默认类型
-	register := typesystem.GetTypeRegister()
+	register := ts_type.GetTypeRegister()
 	entities.MergerTypeRegistry(register)
 
 	p.FieldNameRow = config.Config.Schema["typescript"].FieldNameRow

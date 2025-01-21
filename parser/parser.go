@@ -143,7 +143,7 @@ func (p *Parser) Parse() error {
 
 // ParseFieldType 解析字段类型
 func (*Parser) ParseFieldType(field *entities.Field, ftRow []string) error {
-	val := strings.TrimSpace(ftRow[field.Column])
+	val := strings.ReplaceAll(ftRow[field.Column], " ", "")
 	if val != "" {
 		t, err := entities.NewType(val, field)
 		if err != nil {

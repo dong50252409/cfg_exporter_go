@@ -3,7 +3,7 @@ package flatbuffer
 import (
 	"cfg_exporter/config"
 	"cfg_exporter/entities"
-	"cfg_exporter/implements/flatbuffer/typesystem"
+	"cfg_exporter/implements/flatbuffer/fb_type"
 	"cfg_exporter/parser"
 )
 
@@ -17,7 +17,7 @@ func init() {
 
 func NewParser(p *parser.Parser) parser.IParser {
 	// 用FlatBuffer类型覆盖默认类型
-	register := typesystem.GetTypeRegister()
+	register := fb_type.GetTypeRegister()
 	entities.MergerTypeRegistry(register)
 
 	p.FieldNameRow = config.Config.Schema["flatbuffer"].FieldNameRow
