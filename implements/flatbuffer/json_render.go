@@ -67,6 +67,9 @@ func (r *jsonRender) Execute() error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Printf("导出配置：%s\n", fp)
+
 	return nil
 }
 

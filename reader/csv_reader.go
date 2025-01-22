@@ -22,9 +22,7 @@ func (r *CSVReader) Read(path string) ([][]string, error) {
 		return nil, err
 	}
 
-	defer func(file *os.File) {
-		_ = file.Close()
-	}(file)
+	defer func(file *os.File) { _ = file.Close() }(file)
 
 	records, err := csv.NewReader(file).ReadAll()
 	if err != nil {

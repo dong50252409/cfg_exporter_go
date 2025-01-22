@@ -50,7 +50,7 @@ func NewParser(schemaName string) (IParser, error) {
 // ParseFromFile 从文件读取解析配置表
 func (p *Parser) ParseFromFile(path string) (*entities.Table, error) {
 	if ok := reader.CheckSupport(path); !ok {
-		return nil, fmt.Errorf("配置表不支持！ 文件路径:%s", path)
+		return nil, fmt.Errorf("配置表不支持！文件路径:%s", path)
 	}
 
 	records, err := reader.Read(path)
@@ -63,6 +63,8 @@ func (p *Parser) ParseFromFile(path string) (*entities.Table, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Printf("开始解析配置：%s\n", filename)
 
 	table := &entities.Table{
 		Path:       filepath.Dir(path),
@@ -77,7 +79,6 @@ func (p *Parser) ParseFromFile(path string) (*entities.Table, error) {
 	if err != nil {
 		return nil, fmt.Errorf("配置表解析失败！ 文件路径:%s %s", path, err)
 	}
-
 	return table, nil
 }
 

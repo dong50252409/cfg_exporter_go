@@ -86,6 +86,8 @@ func (r *fbRender) Execute() error {
 		return err
 	}
 
+	fmt.Printf("导出配置：%s\n", fp)
+
 	return nil
 }
 

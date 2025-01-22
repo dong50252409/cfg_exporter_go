@@ -24,11 +24,19 @@ func ToFile(schemaName string, table *entities.Table) error {
 	if !ok {
 		return fmt.Errorf("配置表：%s 渲染模板：%s 还没有被支持", table.Filename, schemaName)
 	}
+
+	fmt.Printf("开始生成配置：%s\n", table.Filename)
 	r := cls(table)
 	dir := r.ExportDir()
-	err := os.MkdirAll(dir, os.ModePerm)
-	if err != nil {
-		panic(err)
+
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return fmt.Errorf("导出路径创建失败 %s", err)
 	}
-	return r.Execute()
+
+	if err := r.Execute(); err != nil {
+		return err
+	}
+
+	fmt.Printf("配置导出完成：%s\n", table.Filename)
+	return nil
 }

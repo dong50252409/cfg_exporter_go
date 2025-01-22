@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"fmt"
 	"path/filepath"
 )
 
@@ -28,6 +29,16 @@ func CheckSupport(path string) bool {
 
 // Read 读取文件
 func Read(path string) ([][]string, error) {
+	fmt.Printf("读取配置文件：%s\n", path)
 	ext := filepath.Ext(path)[1:]
-	return registry[ext].Read(path)
+	records, err := registry[ext].Read(path)
+	if err != nil {
+		return nil, err
+	}
+
+	if records == nil || len(records) == 0 {
+		return nil, fmt.Errorf("没有发现可读取的sheet页签，请检查页签名是否正确！")
+	}
+
+	return records, nil
 }

@@ -2,6 +2,7 @@ package erlang
 
 import (
 	"cfg_exporter/entities"
+	"fmt"
 	"github.com/stoewer/go-strcase"
 	"os"
 	"path/filepath"
@@ -103,6 +104,9 @@ func (r *erlRender) Execute() error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Printf("导出配置：%s\n", fp)
+
 	return nil
 }
 

@@ -4,6 +4,7 @@ import (
 	"cfg_exporter/config"
 	"cfg_exporter/entities"
 	"cfg_exporter/render"
+	"fmt"
 	"github.com/stoewer/go-strcase"
 	"os"
 	"path/filepath"
@@ -90,6 +91,9 @@ func (r *tsRender) Execute() error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Printf("导出配置：%s\n", fp)
+
 	return nil
 }
 

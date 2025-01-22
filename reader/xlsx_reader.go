@@ -47,6 +47,7 @@ func (r *XLSXReader) Read(path string) ([][]string, error) {
 
 		}
 	}
+
 	return records, err
 }
 

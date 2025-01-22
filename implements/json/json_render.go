@@ -5,6 +5,7 @@ import (
 	"cfg_exporter/entities"
 	"cfg_exporter/render"
 	"encoding/json"
+	"fmt"
 	"github.com/stoewer/go-strcase"
 	"os"
 	"path/filepath"
@@ -29,8 +30,8 @@ func (r *jsonRender) Execute() error {
 		return err
 	}
 
-	jsonFilename := filepath.Join(jsonDir, r.Filename())
-	fileIO, err := os.Create(jsonFilename)
+	fp := filepath.Join(jsonDir, r.Filename())
+	fileIO, err := os.Create(fp)
 	if err != nil {
 		return err
 	}
@@ -83,6 +84,8 @@ func (r *jsonRender) Execute() error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Printf("导出配置：%s\n", fp)
 
 	return nil
 }
