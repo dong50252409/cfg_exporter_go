@@ -4,6 +4,9 @@ import (
 	"cfg_exporter/config"
 	"cfg_exporter/entities"
 	"cfg_exporter/render"
+	"fmt"
+	"os/exec"
+	"path/filepath"
 )
 
 type flatbufferRender struct {
@@ -28,6 +31,16 @@ func (r *flatbufferRender) Execute() error {
 	json := &jsonRender{r}
 	if err := json.Execute(); err != nil {
 		return err
+	}
+
+	dir := r.ExportDir()
+	fbFilename := filepath.Join(dir, fb.Filename())
+	jsonFilename := filepath.Join(dir, json.Filename())
+	cmd := exec.Command(r.schema.Flatc, "-o", dir, "-b", fbFilename, jsonFilename)
+	// 获取命令的输出
+	_, err := cmd.Output()
+	if err != nil {
+		return fmt.Errorf("error:%s", err)
 	}
 	return nil
 }

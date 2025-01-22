@@ -52,5 +52,7 @@ destination = "./samples/flatbuffer/"
 file_prefix = ""
 # 表名前缀
 table_name_prefix = ""
+# flatc可执行文件的位置
+flatc = "./samples/flatbuffer/flatc.exe"
 # 命名空间
 namespace = "flatbuffer"

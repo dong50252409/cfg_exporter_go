@@ -30,6 +30,7 @@ type Schema struct {
 	Destination     string `toml:"destination"`
 	FilePrefix      string `toml:"file_prefix"`
 	TableNamePrefix string `toml:"table_name_prefix"`
+	Flatc           string `toml:"flatc"`
 	Namespace       string `toml:"namespace"`
 }
 
