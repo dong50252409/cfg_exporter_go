@@ -35,8 +35,8 @@ func (l *FBList) String() string {
 		return fmt.Sprintf("[%s]", t.(*FBStr).String())
 	case *FBLang:
 		return fmt.Sprintf("[%s]", t.(*FBLang).String())
-	case *FBRaw:
-		return fmt.Sprintf("[%s]", t.(*FBRaw).String())
+	case *FBAny:
+		return fmt.Sprintf("[%s]", t.(*FBAny).String())
 	case *FBList, *FBTuple, *FBMap:
 		return fmt.Sprintf("[%sEntry]", strcase.UpperCamelCase(l.ITypeSystem.(*entities.List).Field.Name))
 	default:

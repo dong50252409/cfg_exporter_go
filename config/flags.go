@@ -17,7 +17,6 @@ func init() {
 	flag.StringVar(&SchemaName, "s", "", "指定config.toml中的区域进行导出.")
 
 	flag.Usage = usage
-
 }
 
 func usage() {

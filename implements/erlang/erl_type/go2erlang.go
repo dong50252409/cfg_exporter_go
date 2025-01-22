@@ -17,7 +17,7 @@ func toString(data interface{}) string {
 		return fmt.Sprintf("<<\"%s\"/utf8>>", v)
 	case bool: // 处理布尔值
 		return strconv.FormatBool(v)
-	case entities.RawT: // 处理原始值，在Erlang中就是atom
+	case entities.AnyT: // 处理原始值，在Erlang中就是atom
 		return fmt.Sprintf("'%s'", v)
 	case []interface{}: // 处理列表
 		var elements []string

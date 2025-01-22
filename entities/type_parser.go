@@ -16,7 +16,7 @@ const (
 	FLOAT                     // 表示数字
 	STRING                    // 表示字符串
 	BOOLEAN                   // 表示布尔值
-	RAW                       // 表示原始数据
+	ANY                       // 表示任意数据
 	LBRACKET                  // 表示左方括号
 	RBRACKET                  // 表示右方括号
 	LPAREN                    // 表示左圆括号
@@ -150,7 +150,7 @@ func (l *lexer) boolean() token {
 	return token{}
 }
 
-func (l *lexer) raw() token {
+func (l *lexer) any() token {
 	var result strings.Builder
 loop:
 	for {
@@ -165,7 +165,7 @@ loop:
 		}
 	}
 
-	return token{Type: RAW, Value: result.String()}
+	return token{Type: ANY, Value: result.String()}
 }
 
 // getNextToken 将输入拆分为标记。
@@ -212,14 +212,14 @@ func (l *lexer) getNextToken() token {
 				return l.boolean()
 			}
 			if unicode.IsLetter(rune(l.currentChar)) {
-				return l.raw()
+				return l.any()
 			}
 		case '\t', '\n', '\v', '\f', '\r', ' ', 0x85, 0xA0:
 			l.advance()
 			continue
 		default:
 			if unicode.IsLetter(rune(l.currentChar)) {
-				return l.raw()
+				return l.any()
 			}
 			l.panic()
 		}
@@ -307,9 +307,9 @@ func (p *parser) parseValue() any {
 		value := p.currentToken.Value == "true"
 		p.eat(BOOLEAN)
 		return value
-	case RAW:
-		value := RawT(p.currentToken.Value)
-		p.eat(RAW)
+	case ANY:
+		value := AnyT(p.currentToken.Value)
+		p.eat(ANY)
 		return value
 	default:
 		p.panic()

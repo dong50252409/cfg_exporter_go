@@ -25,5 +25,5 @@ type ITypeSystem interface {
 // TupleT 元组 最多支持10个元素
 type TupleT [10]interface{}
 
-// RawT 原始类型
-type RawT string
+// AnyT 原始类型
+type AnyT string

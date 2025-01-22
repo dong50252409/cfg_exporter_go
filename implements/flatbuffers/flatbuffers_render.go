@@ -36,7 +36,7 @@ func (r *flatbuffersRender) Execute() error {
 	dir := r.ExportDir()
 	fbFilename := filepath.Join(dir, fb.Filename())
 	jsonFilename := filepath.Join(dir, json.Filename())
-	cmd := exec.Command(r.schema.Flatc, "-o", dir, "-b", fbFilename, jsonFilename)
+	cmd := exec.Command(r.schema.Flatc, "--no-warnings", "-o", dir, "-b", fbFilename, jsonFilename)
 	// 获取命令的输出
 	_, err := cmd.Output()
 	if err != nil {

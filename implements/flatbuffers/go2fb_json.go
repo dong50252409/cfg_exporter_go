@@ -11,7 +11,7 @@ func convert(data any) any {
 	switch v := data.(type) {
 	case string:
 		return strcase.LowerCamelCase(v)
-	case entities.RawT:
+	case entities.AnyT:
 		return strcase.LowerCamelCase(string(v))
 	case entities.TupleT:
 		var elements = make([]any, 0, len(v))
@@ -65,7 +65,7 @@ func toString(data any) string {
 		return strconv.FormatBool(v)
 	case string:
 		return v
-	case entities.RawT:
+	case entities.AnyT:
 		return string(v)
 	default:
 		panic(fmt.Sprintf("%v 无法作为键来使用", v))

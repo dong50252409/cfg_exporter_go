@@ -28,9 +28,11 @@ table {{ $tableName }}{
 
 const dataSetTemplate = `
 {{- define "dataSet" -}}
+{{- $pkFields := .Table.GetPrimaryKeyFields -}}
+{{- $pkField := index $pkFields 0 -}}
 table DataSet{
     {{- range $_, $field := .Table.Fields }}
-    {{ $field.Name | toLowerCamelCase }}: {{ $field.Type }};
+    {{ $field.Name | toLowerCamelCase }}: {{ $field.Type }} {{ if eq $field.Name $pkField.Name }}(key){{ end }};
 	{{- end }}
 }
 {{- end -}}
@@ -110,14 +112,14 @@ func (r *fbsReader) GetEntries() map[string]map[string]string {
 func getNested(t entities.ITypeSystem, entries map[string]map[string]string, deep int) string {
 	var tableName string
 	switch t.(type) {
-	case *fb_type.FBInteger, *fb_type.FBFloat, *fb_type.FBBoolean, *fb_type.FBStr, *fb_type.FBLang, *fb_type.FBRaw:
+	case *fb_type.FBInteger, *fb_type.FBFloat, *fb_type.FBBoolean, *fb_type.FBStr, *fb_type.FBLang, *fb_type.FBAny:
 		return tableName
 	case *fb_type.FBTuple:
 		fbType := t.(*fb_type.FBTuple)
 		baseType := fbType.ITypeSystem.(*entities.Tuple)
 		tableName = getTableName(baseType, entries, deep, "Tuple")
 		switch baseType.T.(type) {
-		case *fb_type.FBInteger, *fb_type.FBFloat, *fb_type.FBBoolean, *fb_type.FBStr, *fb_type.FBLang, *fb_type.FBRaw:
+		case *fb_type.FBInteger, *fb_type.FBFloat, *fb_type.FBBoolean, *fb_type.FBStr, *fb_type.FBLang, *fb_type.FBAny:
 			return fmt.Sprintf("[%s]", baseType.T.String())
 		case *fb_type.FBTuple, *fb_type.FBList, *fb_type.FBMap:
 			entries[tableName] = make(map[string]string, 1)
@@ -129,7 +131,7 @@ func getNested(t entities.ITypeSystem, entries map[string]map[string]string, dee
 		baseType := fbType.ITypeSystem.(*entities.List)
 		tableName = getTableName(baseType, entries, deep, "List")
 		switch baseType.T.(type) {
-		case *fb_type.FBInteger, *fb_type.FBFloat, *fb_type.FBBoolean, *fb_type.FBStr, *fb_type.FBLang, *fb_type.FBRaw:
+		case *fb_type.FBInteger, *fb_type.FBFloat, *fb_type.FBBoolean, *fb_type.FBStr, *fb_type.FBLang, *fb_type.FBAny:
 			return fmt.Sprintf("[%s]", baseType.T.String())
 		case *fb_type.FBTuple, *fb_type.FBList, *fb_type.FBMap:
 			entries[tableName] = make(map[string]string, 1)
@@ -140,7 +142,7 @@ func getNested(t entities.ITypeSystem, entries map[string]map[string]string, dee
 		baseType := fbType.ITypeSystem.(*entities.Map)
 		tableName = getTableName(baseType, entries, deep, "Map")
 		switch baseType.ValueT.(type) {
-		case *fb_type.FBInteger, *fb_type.FBFloat, *fb_type.FBBoolean, *fb_type.FBStr, *fb_type.FBLang, *fb_type.FBRaw:
+		case *fb_type.FBInteger, *fb_type.FBFloat, *fb_type.FBBoolean, *fb_type.FBStr, *fb_type.FBLang, *fb_type.FBAny:
 			entries[tableName] = make(map[string]string, 1)
 			entries[tableName]["k"] = baseType.KeyT.String()
 			entries[tableName]["v"] = baseType.ValueT.String()

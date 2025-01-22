@@ -41,7 +41,7 @@ func (s *Str) GetCheckFunc() func(any) bool {
 	return func(v any) bool {
 		_, ok := v.(string)
 		if !ok {
-			_, ok = v.(RawT)
+			_, ok = v.(AnyT)
 			return ok
 		}
 		return ok
