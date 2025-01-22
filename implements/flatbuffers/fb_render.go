@@ -1,8 +1,8 @@
-package flatbuffer
+package flatbuffers
 
 import (
 	"cfg_exporter/entities"
-	"cfg_exporter/implements/flatbuffer/fb_type"
+	"cfg_exporter/implements/flatbuffers/fb_type"
 	"fmt"
 	"github.com/stoewer/go-strcase"
 	"os"
@@ -10,8 +10,8 @@ import (
 	"text/template"
 )
 
-type fbRender struct {
-	*flatbufferRender
+type fbsReader struct {
+	*flatbuffersRender
 }
 
 const entryTemplate = `
@@ -54,7 +54,7 @@ const fbTemplate = `
 {{ template "tail" . }}
 `
 
-func (r *fbRender) Execute() error {
+func (r *fbsReader) Execute() error {
 	dir := r.ExportDir()
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
@@ -91,15 +91,15 @@ func (r *fbRender) Execute() error {
 	return nil
 }
 
-func (r *fbRender) Filename() string {
+func (r *fbsReader) Filename() string {
 	return strcase.SnakeCase(r.schema.FilePrefix+r.Name) + ".fbs"
 }
 
-func (r *fbRender) Namespace() string {
+func (r *fbsReader) Namespace() string {
 	return r.schema.Namespace
 }
 
-func (r *fbRender) GetEntries() map[string]map[string]string {
+func (r *fbsReader) GetEntries() map[string]map[string]string {
 	var entries = make(map[string]map[string]string)
 	for _, field := range r.Table.Fields {
 		getNested(field.Type, entries, 0)

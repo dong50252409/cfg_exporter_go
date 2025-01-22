@@ -1,4 +1,4 @@
-package flatbuffer
+package flatbuffers
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 )
 
 type jsonRender struct {
-	*flatbufferRender
+	*flatbuffersRender
 }
 
 func (r *jsonRender) Execute() error {

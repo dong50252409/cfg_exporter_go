@@ -1,9 +1,9 @@
-package flatbuffer
+package flatbuffers
 
 import (
 	"cfg_exporter/config"
 	"cfg_exporter/entities"
-	"cfg_exporter/implements/flatbuffer/fb_type"
+	"cfg_exporter/implements/flatbuffers/fb_type"
 	"cfg_exporter/parser"
 )
 
@@ -12,7 +12,7 @@ type FBParse struct {
 }
 
 func init() {
-	parser.RegisterParser("flatbuffer", NewParser)
+	parser.RegisterParser("flatbuffers", NewParser)
 }
 
 func NewParser(p *parser.Parser) parser.IParser {
@@ -20,7 +20,7 @@ func NewParser(p *parser.Parser) parser.IParser {
 	register := fb_type.GetTypeRegister()
 	entities.MergerTypeRegistry(register)
 
-	p.FieldNameRow = config.Config.Schema["flatbuffer"].FieldNameRow
+	p.FieldNameRow = config.Config.Schema["flatbuffers"].FieldNameRow
 	p.FieldTypeRow = config.Config.FieldTypeRow
 	p.FieldDecoratorRow = config.Config.FieldDecoratorRow
 	p.FieldCommentRow = config.Config.FieldCommentRow

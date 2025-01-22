@@ -1,4 +1,4 @@
-package flatbuffer
+package flatbuffers
 
 import (
 	"cfg_exporter/entities"

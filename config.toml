@@ -42,17 +42,17 @@ destination = "./samples/json/"
 # 文件前缀
 file_prefix = "cfg_"
 
-# flatbuffer导出配置
-[schema.flatbuffer]
+# flatbuffers导出配置
+[schema.flatbuffers]
 # 字段名行号
 field_name_row = 4
 # 导出目标路径
-destination = "./samples/flatbuffer/"
+destination = "./samples/flatbuffers/"
 # 文件前缀
 file_prefix = ""
 # 表名前缀
 table_name_prefix = ""
 # flatc可执行文件的位置
-flatc = "./samples/flatbuffer/flatc.exe"
+flatc = "./samples/flatbuffers/flatc.exe"
 # 命名空间
 namespace = "flatbuffer"

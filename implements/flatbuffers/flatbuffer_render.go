@@ -1,4 +1,4 @@
-package flatbuffer
+package flatbuffers
 
 import (
 	"cfg_exporter/config"
@@ -9,21 +9,21 @@ import (
 	"path/filepath"
 )
 
-type flatbufferRender struct {
+type flatbuffersRender struct {
 	*entities.Table
 	schema config.Schema
 }
 
 func init() {
-	render.Register("flatbuffer", newtsRender)
+	render.Register("flatbuffers", newtsRender)
 }
 
 func newtsRender(table *entities.Table) render.IRender {
-	return &flatbufferRender{table, config.Config.Schema["flatbuffer"]}
+	return &flatbuffersRender{table, config.Config.Schema["flatbuffers"]}
 }
 
-func (r *flatbufferRender) Execute() error {
-	fb := &fbRender{r}
+func (r *flatbuffersRender) Execute() error {
+	fb := &fbsReader{r}
 	if err := fb.Execute(); err != nil {
 		return err
 	}
@@ -45,14 +45,14 @@ func (r *flatbufferRender) Execute() error {
 	return nil
 }
 
-func (r *flatbufferRender) ExportDir() string {
+func (r *flatbuffersRender) ExportDir() string {
 	return r.schema.Destination
 }
 
-func (r *flatbufferRender) Filename() string {
+func (r *flatbuffersRender) Filename() string {
 	return ""
 }
 
-func (r *flatbufferRender) ConfigName() string {
+func (r *flatbuffersRender) ConfigName() string {
 	return r.schema.TableNamePrefix + r.Name
 }
