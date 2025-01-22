@@ -20,29 +20,32 @@ func init() {
 }
 
 func newRange(_ *Table, field *Field, str string) error {
-	if param := util.SubParam(str); param != "" {
-		if l := strings.Split(param, ","); len(l) == 2 {
-			switch field.Type.GetKind() {
-			case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-				v1, err1 := strconv.ParseInt(l[0], 10, 64)
-				v2, err2 := strconv.ParseInt(l[1], 10, 64)
-				if err1 == nil && err2 == nil && v1 <= v2 {
-					field.Decorators["range"] = &Range{minValue: v1, maxValue: v2}
-					return nil
+	if field.Type != nil {
+		if param := util.SubParam(str); param != "" {
+			if l := strings.Split(param, ","); len(l) == 2 {
+				switch field.Type.GetKind() {
+				case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+					v1, err1 := strconv.ParseInt(l[0], 10, 64)
+					v2, err2 := strconv.ParseInt(l[1], 10, 64)
+					if err1 == nil && err2 == nil && v1 <= v2 {
+						field.Decorators["range"] = &Range{minValue: v1, maxValue: v2}
+						return nil
+					}
+				case reflect.Float32, reflect.Float64:
+					v1, err1 := strconv.ParseFloat(l[0], 64)
+					v2, err2 := strconv.ParseFloat(l[1], 64)
+					if err1 == nil && err2 == nil && v1 <= v2 {
+						field.Decorators["range"] = &Range{minValue: v1, maxValue: v2}
+						return nil
+					}
+				default:
+					return fmt.Errorf("类型无法使用此装饰器")
 				}
-			case reflect.Float32, reflect.Float64:
-				v1, err1 := strconv.ParseFloat(l[0], 64)
-				v2, err2 := strconv.ParseFloat(l[1], 64)
-				if err1 == nil && err2 == nil && v1 <= v2 {
-					field.Decorators["range"] = &Range{minValue: v1, maxValue: v2}
-					return nil
-				}
-			default:
-				return fmt.Errorf("类型无法使用此装饰器")
 			}
 		}
+		return fmt.Errorf("参数格式错误 range(最小值,最大值)")
 	}
-	return fmt.Errorf("参数格式错误 range(最小值,最大值)")
+	return nil
 }
 
 func (r *Range) RunFieldDecorator(tbl *Table, field *Field) error {

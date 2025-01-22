@@ -20,6 +20,10 @@ func Register(key string, cls func(tbl *entities.Table) IRender) {
 }
 
 func ToFile(schemaName string, table *entities.Table) error {
+	if len(table.Fields) == 0 {
+		fmt.Printf("没有定义字段名跳过生成：%s\n", table.Filename)
+		return nil
+	}
 	cls, ok := renderRegistry[schemaName]
 	if !ok {
 		return fmt.Errorf("配置表：%s 渲染模板：%s 还没有被支持", table.Filename, schemaName)

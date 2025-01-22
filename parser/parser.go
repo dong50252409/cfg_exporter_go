@@ -79,7 +79,12 @@ func (p *Parser) ParseFromFile(path string) (*entities.Table, error) {
 	if err != nil {
 		return nil, fmt.Errorf("配置表解析失败！ 文件路径:%s %s", path, err)
 	}
-	return table, nil
+
+	if err = p.RunDecorator(); err != nil {
+		return nil, err
+	}
+
+	return table, err
 }
 
 // Parse 解析配表
@@ -117,7 +122,7 @@ func (p *Parser) Parse() error {
 		}
 	}
 
-	for column := 0; column < len(fdRow); column++ {
+	for column := range fdRow {
 		var field *entities.Field
 		if column >= len(fnRow) {
 			field = &entities.Field{Column: column, Decorators: make(map[string]any)}
@@ -133,10 +138,6 @@ func (p *Parser) Parse() error {
 		if err := p.ParseFieldDecorator(field, fdRow, column); err != nil {
 			return err
 		}
-	}
-
-	if err := p.RunDecorator(); err != nil {
-		return err
 	}
 
 	return nil
@@ -217,6 +218,10 @@ func (p *Parser) ParseFieldDecorator(field *entities.Field, fdRow []string, colu
 
 // RunDecorator 运行装饰器
 func (p *Parser) RunDecorator() error {
+	if len(p.Fields) == 0 {
+		return nil
+	}
+
 	for _, d := range p.Table.Decorators {
 		if err := d.(entities.ITableDecorator).RunTableDecorator(p.Table); err != nil {
 			return fmt.Errorf("装饰器：%s %s", d.(entities.IDecorator).Name(), err)
