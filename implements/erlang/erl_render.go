@@ -54,13 +54,23 @@ const erlListTemplate = `
 {{/* 声明模板渲染所需的变量 */}}
 {{- $pkValuesList := .Table.GetPrimaryKeyValuesByString -}}
 {{- $pkLastIndex := len $pkValuesList | add -1 -}}
+{{- $pkLen := .Table.GetPrimaryKeyFields | len -}}
 
+{{- if eq $pkLen 1 -}}
+list() ->
+    [
+	{{- range $pkIndex, $pkValues := $pkValuesList -}}
+	{{ $pkValues | joinByComma }}{{ if lt $pkIndex $pkLastIndex }}, {{ end }}
+	{{- end -}}
+    ].
+{{- else -}}
 list() ->
     [
 	{{- range $pkIndex, $pkValues := $pkValuesList -}}
 	{{ "{" }}{{ $pkValues | joinByComma }}{{ "}" }}{{ if lt $pkIndex $pkLastIndex }}, {{ end }}
 	{{- end -}}
     ].
+{{- end -}}
 {{- end -}}
 `
 
