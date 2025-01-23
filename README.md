@@ -45,10 +45,9 @@
 ## 以支持导出模板
 - [x] Erlang
 - [x] JSON
+- [x] Flatbuffers
 
 ### TODO
-- 支持json
-- 支持flatbuffer
 - 支持自定义模板
 - 支持f_key
 - 介绍如何扩展类型、装饰器、其他语言输出的方法

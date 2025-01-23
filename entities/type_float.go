@@ -13,17 +13,20 @@ type Float struct {
 	BitSize int
 }
 
-var floatByteSizes = map[string]int{
-	"32": 32,
-	"64": 64,
-}
+var (
+	floatDefaultBitSizes = "32"
+	floatByteSizes       = map[string]int{
+		"32": 32,
+		"64": 64,
+	}
+)
 
 func init() {
 	TypeRegister("float", NewFloat)
 }
 
 func NewFloat(typeStr string, field *Field) (ITypeSystem, error) {
-	bit := "64"
+	bit := floatDefaultBitSizes
 	if param := util.SubParam(typeStr); param != "" {
 		bit = param
 	}

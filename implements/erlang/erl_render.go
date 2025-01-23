@@ -120,10 +120,12 @@ func (r *erlRender) Execute() error {
 	return nil
 }
 
+// ExportDir 导出目录
 func (r *erlRender) ExportDir() string {
 	return strcase.SnakeCase(filepath.Join(r.erlangRender.ExportDir(), "erl"))
 }
 
+// Filename 文件名
 func (r *erlRender) Filename() string {
-	return strcase.SnakeCase(r.schema.FilePrefix+r.Name) + ".erl"
+	return strcase.SnakeCase(r.Schema.FilePrefix+r.Name) + ".erl"
 }

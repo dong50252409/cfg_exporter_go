@@ -1,7 +1,6 @@
 package typescript
 
 import (
-	"cfg_exporter/config"
 	"cfg_exporter/entities"
 	"cfg_exporter/render"
 	"fmt"
@@ -48,16 +47,15 @@ const tsTemplate = `
 `
 
 type tsRender struct {
-	*entities.Table
-	schema config.Schema
+	*render.Render
 }
 
 func init() {
 	render.Register("typescript", newtsRender)
 }
 
-func newtsRender(table *entities.Table) render.IRender {
-	return &tsRender{table, config.Config.Schema["typescript"]}
+func newtsRender(render *render.Render) render.IRender {
+	return &tsRender{render}
 }
 
 func (r *tsRender) Execute() error {
@@ -97,14 +95,10 @@ func (r *tsRender) Execute() error {
 	return nil
 }
 
-func (r *tsRender) ExportDir() string {
-	return r.schema.Destination
-}
-
 func (r *tsRender) Filename() string {
-	return strcase.KebabCase(r.schema.FilePrefix+r.Name) + ".ts"
+	return strcase.KebabCase(r.Schema.FilePrefix+r.Name) + ".ts"
 }
 
 func (r *tsRender) ConfigName() string {
-	return r.schema.TableNamePrefix + r.Name
+	return r.Schema.TableNamePrefix + r.Name
 }

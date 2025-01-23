@@ -94,11 +94,11 @@ func (r *fbsReader) Execute() error {
 }
 
 func (r *fbsReader) Filename() string {
-	return strcase.SnakeCase(r.schema.FilePrefix+r.Name) + ".fbs"
+	return strcase.SnakeCase(r.Schema.FilePrefix+r.Name) + ".fbs"
 }
 
 func (r *fbsReader) Namespace() string {
-	return r.schema.Namespace
+	return r.Schema.Namespace
 }
 
 func (r *fbsReader) GetEntries() map[string]map[string]string {

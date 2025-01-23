@@ -6,18 +6,19 @@ import (
 )
 
 type CSVReader struct {
+	*Reader
 }
 
 func init() {
-	Register("csv", &CSVReader{})
+	Register("csv", newCSVReader)
 }
 
-func (r *CSVReader) CheckSupport(_ string) bool {
-	return true
+func newCSVReader(r *Reader) IReader {
+	return &CSVReader{r}
 }
 
-func (r *CSVReader) Read(path string) ([][]string, error) {
-	file, err := os.Open(path)
+func (r *CSVReader) Read() ([][]string, error) {
+	file, err := os.Open(r.Path)
 	if err != nil {
 		return nil, err
 	}

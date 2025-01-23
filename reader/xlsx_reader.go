@@ -5,21 +5,22 @@ import (
 	"cfg_exporter/util"
 	"github.com/xuri/excelize/v2"
 	"path/filepath"
-	"strings"
 )
 
-type XLSXReader struct{}
+type XLSXReader struct {
+	*Reader
+}
 
 func init() {
-	Register("xlsx", &XLSXReader{})
+	Register("xlsx", newXLSXReader)
 }
 
-func (r *XLSXReader) CheckSupport(path string) bool {
-	return strings.Index(filepath.Base(path), "~$") == -1
+func newXLSXReader(reader *Reader) IReader {
+	return &XLSXReader{reader}
 }
 
-func (r *XLSXReader) Read(path string) ([][]string, error) {
-	file, err := excelize.OpenFile(path)
+func (r *XLSXReader) Read() ([][]string, error) {
+	file, err := excelize.OpenFile(r.Path)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +28,7 @@ func (r *XLSXReader) Read(path string) ([][]string, error) {
 	defer func() { _ = file.Close() }()
 
 	var records [][]string
-	filename := filepath.Base(path)
+	filename := filepath.Base(r.Path)
 	tableName, err := util.SubTableName(filename)
 	if err != nil {
 		return nil, err

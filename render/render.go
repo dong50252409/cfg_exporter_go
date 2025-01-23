@@ -1,46 +1,63 @@
 package render
 
 import (
+	"cfg_exporter/config"
 	"cfg_exporter/entities"
 	"fmt"
 	"os"
 )
 
 type IRender interface {
-	ExportDir() string
 	Execute() error
-	Filename() string
-	ConfigName() string
+	Verify() error
 }
 
-var renderRegistry = make(map[string]func(tbl *entities.Table) IRender)
+type Render struct {
+	*entities.Table
+	Schema config.Schema
+	cls    IRender
+}
 
-func Register(key string, cls func(tbl *entities.Table) IRender) {
+var renderRegistry = make(map[string]func(render *Render) IRender)
+
+func Register(key string, cls func(render *Render) IRender) {
 	renderRegistry[key] = cls
 }
 
-func ToFile(schemaName string, table *entities.Table) error {
+func NewRender(schemaName string, table *entities.Table) (IRender, error) {
 	if len(table.Fields) == 0 {
 		fmt.Printf("没有定义字段名跳过生成：%s\n", table.Filename)
-		return nil
-	}
-	cls, ok := renderRegistry[schemaName]
-	if !ok {
-		return fmt.Errorf("配置表：%s 渲染模板：%s 还没有被支持", table.Filename, schemaName)
+		return nil, nil
 	}
 
-	fmt.Printf("开始生成配置：%s\n", table.Filename)
-	r := cls(table)
+	if cls, ok := renderRegistry[schemaName]; ok {
+		r := &Render{table, config.Config.Schema[schemaName], nil}
+		r.cls = cls(r)
+		return r, nil
+	}
+	return nil, fmt.Errorf("配置表：%s 渲染模板：%s 还没有被支持", table.Filename, schemaName)
+}
+
+func (r Render) ExportDir() string {
+	return r.Schema.Destination
+}
+
+func (r Render) Execute() error {
+	fmt.Printf("开始导出配置：%s\n", r.Table.Filename)
+
 	dir := r.ExportDir()
-
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return fmt.Errorf("导出路径创建失败 %s", err)
 	}
-
-	if err := r.Execute(); err != nil {
+	err := r.cls.Execute()
+	if err != nil {
 		return err
 	}
 
-	fmt.Printf("配置导出完成：%s\n", table.Filename)
+	fmt.Printf("配置导出完成：%s\n", r.Table.Filename)
 	return nil
+}
+
+func (r Render) Verify() error {
+	return r.cls.Verify()
 }

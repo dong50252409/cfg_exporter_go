@@ -1,8 +1,8 @@
 package parser
 
 import (
+	"cfg_exporter/config"
 	"cfg_exporter/entities"
-	"cfg_exporter/reader"
 	"cfg_exporter/util"
 	"fmt"
 	"path/filepath"
@@ -12,7 +12,7 @@ import (
 )
 
 type IParser interface {
-	ParseFromFile(path string) (*entities.Table, error)
+	ParseFromFile(path string, records [][]string) (*entities.Table, error)
 }
 
 type Parser struct {
@@ -42,20 +42,27 @@ func RegisterParser(name string, cls func(p *Parser) IParser) {
 // NewParser 新建解析器
 func NewParser(schemaName string) (IParser, error) {
 	if parser, ok := parserRegistry[schemaName]; ok {
-		return parser(&Parser{}), nil
+		p := &Parser{
+			FieldNameRow:      config.Config.Schema[schemaName].FieldNameRow,
+			FieldTypeRow:      config.Config.FieldTypeRow,
+			FieldDecoratorRow: config.Config.FieldDecoratorRow,
+			FieldCommentRow:   config.Config.FieldCommentRow,
+			BodyStartRow:      config.Config.BodyStartRow,
+		}
+		return parser(p), nil
 	}
 	return nil, fmt.Errorf("未找到解析器：%s", schemaName)
 }
 
 // ParseFromFile 从文件读取解析配置表
-func (p *Parser) ParseFromFile(path string) (*entities.Table, error) {
-	if ok := reader.CheckSupport(path); !ok {
-		return nil, fmt.Errorf("配置表不支持！文件路径:%s", path)
-	}
-
-	records, err := reader.Read(path)
-	if err != nil {
-		return nil, fmt.Errorf("配置表读取失败！ 文件路径:%s %s", path, err)
+func (p *Parser) ParseFromFile(path string, records [][]string) (*entities.Table, error) {
+	// 删除空行
+	for index := config.Config.BodyStartRow - 1; index < len(records); {
+		if records[index] == nil {
+			records = append(records[:index], records[index+1:]...)
+		} else {
+			index++
+		}
 	}
 
 	filename := filepath.Base(path)

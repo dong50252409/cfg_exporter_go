@@ -1,8 +1,6 @@
 package json
 
 import (
-	"cfg_exporter/config"
-	"cfg_exporter/entities"
 	"cfg_exporter/render"
 	"encoding/json"
 	"fmt"
@@ -12,16 +10,15 @@ import (
 )
 
 type jsonRender struct {
-	*entities.Table
-	schema config.Schema
+	*render.Render
 }
 
 func init() {
 	render.Register("json", newJSONRender)
 }
 
-func newJSONRender(table *entities.Table) render.IRender {
-	return &jsonRender{table, config.Config.Schema["json"]}
+func newJSONRender(render *render.Render) render.IRender {
+	return &jsonRender{render}
 }
 
 func (r *jsonRender) Execute() error {
@@ -90,14 +87,6 @@ func (r *jsonRender) Execute() error {
 	return nil
 }
 
-func (r *jsonRender) ExportDir() string {
-	return r.schema.Destination
-}
-
 func (r *jsonRender) Filename() string {
-	return strcase.KebabCase(r.schema.FilePrefix+r.Name) + ".json"
-}
-
-func (r *jsonRender) ConfigName() string {
-	return ""
+	return strcase.KebabCase(r.Schema.FilePrefix+r.Name) + ".json"
 }

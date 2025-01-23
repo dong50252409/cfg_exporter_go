@@ -13,19 +13,25 @@ type Integer struct {
 	BitSize int
 }
 
-var intByteSizes = map[string]int{
-	"8":  8,
-	"16": 16,
-	"32": 32,
-	"64": 64,
-}
+var (
+	// 默认int位数
+	integerDefaultBitSizes = "32"
+
+	// int位数
+	intByteSizes = map[string]int{
+		"8":  8,
+		"16": 16,
+		"32": 32,
+		"64": 64,
+	}
+)
 
 func init() {
 	TypeRegister("int", NewInteger)
 }
 
 func NewInteger(typeStr string, field *Field) (ITypeSystem, error) {
-	bit := "64"
+	bit := integerDefaultBitSizes
 	if param := util.SubParam(typeStr); param != "" {
 		bit = param
 	}

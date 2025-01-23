@@ -2,6 +2,7 @@ package main
 
 import (
 	"cfg_exporter/config"
+	"cfg_exporter/entities"
 	_ "cfg_exporter/implements/erlang"
 	_ "cfg_exporter/implements/flatbuffers"
 	_ "cfg_exporter/implements/json"
@@ -38,23 +39,58 @@ func main() {
 }
 
 func run(path string) error {
-	if ok := reader.CheckSupport(path); !ok {
-		return nil
+	records, err := readFile(path)
+	if err != nil {
+		return err
 	}
 
+	t, err := parserTable(path, records)
+	if err != nil {
+		return err
+	}
+
+	err = renderTable(t)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func readFile(path string) ([][]string, error) {
+	r, err := reader.NewReader(path)
+	if err != nil {
+		return nil, err
+	}
+	records, err := r.Read()
+	if err != nil {
+		return nil, err
+	}
+	return records, nil
+}
+
+func parserTable(path string, records [][]string) (*entities.Table, error) {
 	p, err := parser.NewParser(config.SchemaName)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	t, err := p.ParseFromFile(path)
+	t, err := p.ParseFromFile(path, records)
 	if err != nil {
-		return err
+		return nil, err
 	}
+	return t, nil
+}
 
-	if err = render.ToFile(config.SchemaName, t); err != nil {
+func renderTable(t *entities.Table) error {
+	if r, err := render.NewRender(config.SchemaName, t); err != nil {
 		return err
+	} else {
+		if err = r.Execute(); err != nil {
+			return err
+		}
+		if err = r.Verify(); err != nil {
+			return err
+		}
 	}
-
 	return nil
 }

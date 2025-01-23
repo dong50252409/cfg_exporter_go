@@ -74,5 +74,5 @@ func (r *jsonRender) Execute() error {
 }
 
 func (r *jsonRender) Filename() string {
-	return strcase.SnakeCase(r.schema.FilePrefix+r.Name) + ".json"
+	return strcase.SnakeCase(r.Schema.FilePrefix+r.Name) + ".json"
 }

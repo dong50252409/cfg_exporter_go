@@ -1,8 +1,6 @@
 package flatbuffers
 
 import (
-	"cfg_exporter/config"
-	"cfg_exporter/entities"
 	"cfg_exporter/render"
 	"fmt"
 	"os/exec"
@@ -10,16 +8,15 @@ import (
 )
 
 type flatbuffersRender struct {
-	*entities.Table
-	schema config.Schema
+	*render.Render
 }
 
 func init() {
 	render.Register("flatbuffers", newtsRender)
 }
 
-func newtsRender(table *entities.Table) render.IRender {
-	return &flatbuffersRender{table, config.Config.Schema["flatbuffers"]}
+func newtsRender(render *render.Render) render.IRender {
+	return &flatbuffersRender{render}
 }
 
 func (r *flatbuffersRender) Execute() error {
@@ -36,7 +33,7 @@ func (r *flatbuffersRender) Execute() error {
 	dir := r.ExportDir()
 	fbFilename := filepath.Join(dir, fb.Filename())
 	jsonFilename := filepath.Join(dir, json.Filename())
-	cmd := exec.Command(r.schema.Flatc, "--no-warnings", "-o", dir, "-b", fbFilename, jsonFilename)
+	cmd := exec.Command(r.Schema.Flatc, "--no-warnings", "-o", dir, "-b", fbFilename, jsonFilename)
 	// 获取命令的输出
 	_, err := cmd.Output()
 	if err != nil {
@@ -45,14 +42,6 @@ func (r *flatbuffersRender) Execute() error {
 	return nil
 }
 
-func (r *flatbuffersRender) ExportDir() string {
-	return r.schema.Destination
-}
-
-func (r *flatbuffersRender) Filename() string {
-	return ""
-}
-
 func (r *flatbuffersRender) ConfigName() string {
-	return r.schema.TableNamePrefix + r.Name
+	return r.Schema.TableNamePrefix + r.Name
 }

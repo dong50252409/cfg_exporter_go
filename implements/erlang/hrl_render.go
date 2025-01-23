@@ -101,5 +101,5 @@ func (r *hrlRender) ExportDir() string {
 }
 
 func (r *hrlRender) Filename() string {
-	return strcase.SnakeCase(r.schema.FilePrefix+r.Name) + ".hrl"
+	return strcase.SnakeCase(r.Schema.FilePrefix+r.Name) + ".hrl"
 }
