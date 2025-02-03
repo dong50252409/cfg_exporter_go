@@ -29,15 +29,15 @@ func (l *Lang) String() string {
 	return "lang"
 }
 
-func (l *Lang) GetDefaultValue() string {
+func (l *Lang) DefaultValue() string {
 	return `""`
 }
 
-func (l *Lang) GetKind() reflect.Kind {
+func (l *Lang) Kind() reflect.Kind {
 	return reflect.String
 }
 
-func (l *Lang) GetCheckFunc() func(any) bool {
+func (l *Lang) CheckFunc() func(any) bool {
 	return func(v any) bool {
 		_, ok := v.(string)
 		if !ok {

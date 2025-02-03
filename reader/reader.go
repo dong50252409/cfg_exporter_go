@@ -4,6 +4,7 @@ import (
 	"cfg_exporter/config"
 	"fmt"
 	"path/filepath"
+	"strings"
 )
 
 type IReader interface {
@@ -23,13 +24,19 @@ func Register(key string, cls func(reader *Reader) IReader) {
 }
 
 func NewReader(path string) (*Reader, error) {
+	if strings.HasPrefix(filepath.Base(path), "~$") {
+		return nil, errorTableTempFile(path)
+	}
+
 	ext := filepath.Ext(path)[1:]
 	cls, ok := registry[ext]
 	if !ok {
-		return nil, fmt.Errorf("配置表不支持！%s", path)
+		return nil, errorTableNotSupported(path)
 	}
+
 	r := &Reader{Path: path}
 	r.cls = cls(r)
+
 	return r, nil
 }
 
@@ -39,11 +46,11 @@ func (r *Reader) Read() ([][]string, error) {
 
 	records, err := r.cls.Read()
 	if err != nil {
-		return nil, fmt.Errorf("配置表读取失败！%s %s", r.Path, err)
+		return nil, errorTableReadFailed(r.Path, err)
 	}
 
 	if records == nil || len(records) == 0 {
-		return nil, fmt.Errorf("没有发现可读取的sheet页签，请检查页签名是否正确！%s", r.Path)
+		return nil, errorTableNotSheet(r.Path)
 	}
 
 	// 删除空行

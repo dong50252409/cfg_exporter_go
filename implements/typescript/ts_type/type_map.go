@@ -28,6 +28,6 @@ func (m *TSMap) String() string {
 	return "Map<any, any>"
 }
 
-func (*TSMap) GetDefaultValue() string {
+func (*TSMap) DefaultValue() string {
 	return "new Map()"
 }

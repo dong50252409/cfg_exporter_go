@@ -28,6 +28,6 @@ func (*TSTuple) String() string {
 	return "any[]"
 }
 
-func (*TSTuple) GetDefaultValue() string {
+func (*TSTuple) DefaultValue() string {
 	return "[]"
 }

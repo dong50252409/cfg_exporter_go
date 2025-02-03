@@ -21,5 +21,5 @@ func newAny(typeStr string, field *entities.Field) (entities.ITypeSystem, error)
 }
 
 func (s *FBAny) String() string {
-	return "string"
+	return "[ubyte](flexbuffer)"
 }

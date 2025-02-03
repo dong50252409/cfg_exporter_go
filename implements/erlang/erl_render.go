@@ -9,8 +9,8 @@ import (
 	"text/template"
 )
 
-type erlRender struct {
-	*erlangRender
+type ERender struct {
+	*ERLRender
 }
 
 const erlHeadTemplate = `
@@ -82,7 +82,7 @@ const erlTemplate = `
 {{ template "list" .}}
 `
 
-func (r *erlRender) Execute() error {
+func (r *ERender) Execute() error {
 	erlDir := r.ExportDir()
 	if err := os.MkdirAll(erlDir, os.ModePerm); err != nil {
 		return err
@@ -121,11 +121,11 @@ func (r *erlRender) Execute() error {
 }
 
 // ExportDir 导出目录
-func (r *erlRender) ExportDir() string {
-	return strcase.SnakeCase(filepath.Join(r.erlangRender.ExportDir(), "erl"))
+func (r *ERender) ExportDir() string {
+	return strcase.SnakeCase(filepath.Join(r.ERLRender.ExportDir(), "erl"))
 }
 
 // Filename 文件名
-func (r *erlRender) Filename() string {
+func (r *ERender) Filename() string {
 	return strcase.SnakeCase(r.Schema.FilePrefix+r.Name) + ".erl"
 }

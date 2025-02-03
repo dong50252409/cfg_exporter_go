@@ -28,6 +28,6 @@ func (m *ErlMap) String() string {
 	return "map()"
 }
 
-func (*ErlMap) GetDefaultValue() string {
+func (*ErlMap) DefaultValue() string {
 	return "#{}"
 }

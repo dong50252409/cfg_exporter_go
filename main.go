@@ -10,6 +10,7 @@ import (
 	"cfg_exporter/parser"
 	"cfg_exporter/reader"
 	"cfg_exporter/render"
+	"errors"
 	"flag"
 	"os"
 	"path/filepath"
@@ -41,6 +42,9 @@ func main() {
 func run(path string) error {
 	records, err := readFile(path)
 	if err != nil {
+		if errors.Is(err, reader.ErrorTableTempFile) {
+			return nil
+		}
 		return err
 	}
 

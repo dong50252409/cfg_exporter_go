@@ -29,6 +29,6 @@ func (s *ErlAny) String() string {
 	return "term()"
 }
 
-func (s *ErlAny) GetDefaultValue() string {
+func (s *ErlAny) DefaultValue() string {
 	return "undefined"
 }

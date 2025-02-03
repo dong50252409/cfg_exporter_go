@@ -50,8 +50,8 @@ func (m *Map) ParseString(str string) (any, error) {
 		return nil, err
 	}
 	if m.KeyT != nil && m.ValueT != nil {
-		keyCheckFunc := m.KeyT.GetCheckFunc()
-		valueCheckFunc := m.ValueT.GetCheckFunc()
+		keyCheckFunc := m.KeyT.CheckFunc()
+		valueCheckFunc := m.ValueT.CheckFunc()
 		for key, val := range v.(map[any]any) {
 			if !keyCheckFunc(key) {
 				return nil, ErrorTypeMapKeyNotMatch(m, key)
@@ -76,17 +76,17 @@ func (m *Map) String() string {
 	return "map"
 }
 
-func (m *Map) GetDefaultValue() string {
+func (m *Map) DefaultValue() string {
 	return "{}"
 }
 
-func (m *Map) GetKind() reflect.Kind {
+func (m *Map) Kind() reflect.Kind {
 	return reflect.Map
 }
 
-func (m *Map) GetCheckFunc() func(any) bool {
-	keyCF := m.KeyT.GetCheckFunc()
-	valueCF := m.ValueT.GetCheckFunc()
+func (m *Map) CheckFunc() func(any) bool {
+	keyCF := m.KeyT.CheckFunc()
+	valueCF := m.ValueT.CheckFunc()
 	return func(v any) bool {
 		v1, ok := v.(map[any]any)
 		if !ok {

@@ -32,15 +32,15 @@ func (r *Any) String() string {
 	return "any"
 }
 
-func (r *Any) GetDefaultValue() string {
+func (r *Any) DefaultValue() string {
 	return "nil"
 }
 
-func (r *Any) GetKind() reflect.Kind {
+func (r *Any) Kind() reflect.Kind {
 	return reflect.String
 }
 
-func (r *Any) GetCheckFunc() func(any) bool {
+func (r *Any) CheckFunc() func(any) bool {
 	return func(v any) bool {
 		_, ok := v.(string)
 		if !ok {

@@ -15,7 +15,6 @@ type IRender interface {
 type Render struct {
 	*entities.Table
 	Schema config.Schema
-	cls    IRender
 }
 
 var renderRegistry = make(map[string]func(render *Render) IRender)
@@ -31,9 +30,8 @@ func NewRender(schemaName string, table *entities.Table) (IRender, error) {
 	}
 
 	if cls, ok := renderRegistry[schemaName]; ok {
-		r := &Render{table, config.Config.Schema[schemaName], nil}
-		r.cls = cls(r)
-		return r, nil
+		r := &Render{table, config.Config.Schema[schemaName]}
+		return cls(r), nil
 	}
 	return nil, fmt.Errorf("配置表：%s 渲染模板：%s 还没有被支持", table.Filename, schemaName)
 }
@@ -42,22 +40,16 @@ func (r Render) ExportDir() string {
 	return r.Schema.Destination
 }
 
-func (r Render) Execute() error {
+func (r Render) Before() error {
 	fmt.Printf("开始导出配置：%s\n", r.Table.Filename)
-
 	dir := r.ExportDir()
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return fmt.Errorf("导出路径创建失败 %s", err)
 	}
-	err := r.cls.Execute()
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("配置导出完成：%s\n", r.Table.Filename)
 	return nil
 }
 
-func (r Render) Verify() error {
-	return r.cls.Verify()
+func (r Render) After() error {
+	fmt.Printf("配置导出完成：%s\n", r.Table.Filename)
+	return nil
 }

@@ -38,7 +38,7 @@ func (l *List) ParseString(str string) (any, error) {
 		return nil, ErrorTypeParseFailed(l, str)
 	}
 	if l.T != nil {
-		checkFunc := l.T.GetCheckFunc()
+		checkFunc := l.T.CheckFunc()
 		for i, e := range v.([]any) {
 			if !checkFunc(e) {
 				return nil, ErrorTypeNotMatch(l, i, e)
@@ -60,16 +60,16 @@ func (l *List) String() string {
 	return "list"
 }
 
-func (l *List) GetDefaultValue() string {
+func (l *List) DefaultValue() string {
 	return "[]"
 }
 
-func (l *List) GetKind() reflect.Kind {
+func (l *List) Kind() reflect.Kind {
 	return reflect.Slice
 }
 
-func (l *List) GetCheckFunc() func(any) bool {
-	cf := l.T.GetCheckFunc()
+func (l *List) CheckFunc() func(any) bool {
+	cf := l.T.CheckFunc()
 	return func(v any) bool {
 		v1, ok := v.([]any)
 		if !ok {

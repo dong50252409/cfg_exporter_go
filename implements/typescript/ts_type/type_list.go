@@ -28,6 +28,6 @@ func (l *TSList) String() string {
 	return "any[]"
 }
 
-func (*TSList) GetDefaultValue() string {
+func (*TSList) DefaultValue() string {
 	return "[]"
 }

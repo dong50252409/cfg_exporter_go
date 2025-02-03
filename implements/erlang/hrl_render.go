@@ -9,8 +9,8 @@ import (
 	"text/template"
 )
 
-type hrlRender struct {
-	*erlangRender
+type HRender struct {
+	*ERLRender
 }
 
 const hrlHeadTemplate = `
@@ -59,7 +59,7 @@ const hrlTemplate = `
 {{ template "tail" .}}
 `
 
-func (r *hrlRender) Execute() error {
+func (r *HRender) Execute() error {
 	hrlDir := r.ExportDir()
 	if err := os.MkdirAll(hrlDir, os.ModePerm); err != nil {
 		return err
@@ -96,10 +96,10 @@ func (r *hrlRender) Execute() error {
 	return nil
 }
 
-func (r *hrlRender) ExportDir() string {
-	return strcase.SnakeCase(filepath.Join(r.erlangRender.ExportDir(), "hrl"))
+func (r *HRender) ExportDir() string {
+	return strcase.SnakeCase(filepath.Join(r.ERLRender.ExportDir(), "hrl"))
 }
 
-func (r *hrlRender) Filename() string {
+func (r *HRender) Filename() string {
 	return strcase.SnakeCase(r.Schema.FilePrefix+r.Name) + ".hrl"
 }

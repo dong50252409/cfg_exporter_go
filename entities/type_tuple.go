@@ -41,7 +41,7 @@ func (t *Tuple) ParseString(str string) (any, error) {
 		return v, nil
 	}
 	if t.T != nil {
-		checkFunc := t.T.GetCheckFunc()
+		checkFunc := t.T.CheckFunc()
 		for i, e := range v.(TupleT) {
 			if e != nil {
 				if !checkFunc(e) {
@@ -71,16 +71,16 @@ func (t *Tuple) String() string {
 	return "tuple"
 }
 
-func (t *Tuple) GetDefaultValue() string {
+func (t *Tuple) DefaultValue() string {
 	return "[]"
 }
 
-func (t *Tuple) GetKind() reflect.Kind {
+func (t *Tuple) Kind() reflect.Kind {
 	return reflect.Array
 }
 
-func (t *Tuple) GetCheckFunc() func(any) bool {
-	cf := t.T.GetCheckFunc()
+func (t *Tuple) CheckFunc() func(any) bool {
+	cf := t.T.CheckFunc()
 	return func(v any) bool {
 		v1, ok := v.(TupleT)
 		if !ok {

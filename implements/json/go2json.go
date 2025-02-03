@@ -3,55 +3,37 @@ package json
 import (
 	"cfg_exporter/entities"
 	"fmt"
-	"github.com/stoewer/go-strcase"
 	"strconv"
 )
 
 func convert(data any) any {
 	switch v := data.(type) {
-	case string:
-		return strcase.LowerCamelCase(v)
-	case entities.AnyT:
-		return strcase.LowerCamelCase(string(v))
-	case entities.TupleT:
+	case []any:
 		var elements = make([]any, 0, len(v))
 		for _, item := range v {
 			if item == nil {
 				break
 			}
-			switch item.(type) {
-			case entities.TupleT, []any:
-				elements = append(elements, map[string]any{"e": convert(item)})
-			default:
-				elements = append(elements, convert(item))
-			}
+			elements = append(elements, convert(item))
 		}
 		return elements
-	case []interface{}:
-		var elements = make([]any, 0, len(v))
+	case entities.TupleT:
+		var elements = make([]any, 0)
 		for _, item := range v {
-			switch item.(type) {
-			case entities.TupleT, []any:
-				elements = append(elements, map[string]any{"e": convert(item)})
-			default:
-				elements = append(elements, convert(item))
+			if item == nil {
+				break
 			}
+			elements = append(elements, convert(item))
 		}
 		return elements
 	case map[any]any:
-		elements := make([]any, 0, len(v))
+		elements := make(map[string]any, len(v))
 		for key, value := range v {
-			if v1 := convert(value); v1 != nil {
-				elements = append(elements, map[string]any{
-					"k": toString(key),
-					"v": v1,
-				})
-			}
+			elements[toString(key)] = convert(value)
 		}
 		return elements
 	default:
 		return v
-
 	}
 }
 

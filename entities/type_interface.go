@@ -12,14 +12,14 @@ type ITypeSystem interface {
 	// String 将Golang类型转换为其他语言中的类型字符串
 	String() string
 
-	// GetDefaultValue 获取类型默认值字符串
-	GetDefaultValue() string
+	// DefaultValue 获取类型默认值字符串
+	DefaultValue() string
 
-	// GetKind 获取基本类型
-	GetKind() reflect.Kind
+	// Kind 获取基本类型
+	Kind() reflect.Kind
 
-	// GetCheckFunc 获取检查函数
-	GetCheckFunc() func(any) bool
+	// CheckFunc 获取检查函数
+	CheckFunc() func(any) bool
 }
 
 // TupleT 元组 最多支持10个元素

@@ -23,7 +23,7 @@ func newRange(_ *Table, field *Field, str string) error {
 	if field.Type != nil {
 		if param := util.SubParam(str); param != "" {
 			if l := strings.Split(param, ","); len(l) == 2 {
-				switch field.Type.GetKind() {
+				switch field.Type.Kind() {
 				case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 					v1, err1 := strconv.ParseInt(l[0], 10, 64)
 					v2, err2 := strconv.ParseInt(l[1], 10, 64)
@@ -66,7 +66,7 @@ func (*Range) Name() string {
 }
 
 func (r *Range) Equal(rowIndex int, v any, t ITypeSystem) error {
-	switch t.GetKind() {
+	switch t.Kind() {
 	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		if !(r.minValue.(int64) <= v.(int64) && v.(int64) <= r.maxValue.(int64)) {
 			return fmt.Errorf("第 %d 行 数值必须在%d到%d之间", rowIndex+config.Config.BodyStartRow, r.minValue, r.maxValue)

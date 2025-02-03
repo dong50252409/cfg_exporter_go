@@ -2,8 +2,6 @@ package fb_type
 
 import (
 	"cfg_exporter/entities"
-	"fmt"
-	"github.com/stoewer/go-strcase"
 )
 
 type FBMap struct {
@@ -23,12 +21,9 @@ func newMap(typeStr string, field *entities.Field) (entities.ITypeSystem, error)
 }
 
 func (m *FBMap) String() string {
-	if m.ITypeSystem.(*entities.Map).ValueT == nil {
-		return "string"
-	}
-	return fmt.Sprintf("[%sEntry]", strcase.UpperCamelCase(m.ITypeSystem.(*entities.Map).Field.Name))
+	return "[ubyte](flexbuffer)"
 }
 
-func (*FBMap) GetDefaultValue() string {
+func (*FBMap) DefaultValue() string {
 	return "[]"
 }

@@ -72,11 +72,11 @@ func (i *Integer) String() string {
 	}
 }
 
-func (i *Integer) GetDefaultValue() string {
+func (i *Integer) DefaultValue() string {
 	return "0"
 }
 
-func (i *Integer) GetKind() reflect.Kind {
+func (i *Integer) Kind() reflect.Kind {
 	switch i.BitSize {
 	case 8:
 		return reflect.Int8
@@ -91,7 +91,7 @@ func (i *Integer) GetKind() reflect.Kind {
 	}
 }
 
-func (i *Integer) GetCheckFunc() func(any) bool {
+func (i *Integer) CheckFunc() func(any) bool {
 	switch i.BitSize {
 	case 8:
 		return func(v any) bool {

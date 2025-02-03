@@ -3,13 +3,14 @@ package json
 import (
 	"cfg_exporter/render"
 	"encoding/json"
-	"fmt"
 	"github.com/stoewer/go-strcase"
 	"os"
 	"path/filepath"
+	"reflect"
+	"sort"
 )
 
-type jsonRender struct {
+type JSONRender struct {
 	*render.Render
 }
 
@@ -18,10 +19,14 @@ func init() {
 }
 
 func newJSONRender(render *render.Render) render.IRender {
-	return &jsonRender{render}
+	return &JSONRender{render}
 }
 
-func (r *jsonRender) Execute() error {
+func (r *JSONRender) Execute() error {
+	if err := r.Render.Before(); err != nil {
+		return err
+	}
+
 	jsonDir := r.ExportDir()
 	if err := os.MkdirAll(jsonDir, os.ModePerm); err != nil {
 		return err
@@ -38,21 +43,47 @@ func (r *jsonRender) Execute() error {
 	for _, rowData := range r.DataSet {
 		rowMap := make(map[string]any, len(r.Fields))
 		for fieldIndex, field := range r.Fields {
-			v := rowData[fieldIndex]
-			switch v {
-			case nil:
-				continue
-			case "":
+			switch v := rowData[fieldIndex]; v {
+			case nil, "":
 				continue
 			default:
 				v1 := convert(v)
-				if v1 != nil {
-					rowMap[strcase.LowerCamelCase(field.Name)] = v1
-				}
+				rowMap[strcase.LowerCamelCase(field.Name)] = v1
 			}
 		}
 		dataList = append(dataList, rowMap)
 	}
+	pkFields := r.GetPrimaryKeyFields()
+	sort.Slice(dataList, func(i, j int) bool {
+		for _, field := range pkFields {
+			switch field.Type.Kind() {
+			case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				switch v1, v2 := dataList[i][field.Name].(int64), dataList[j][field.Name].(int64); {
+				case v1 < v2:
+					return true
+				case v1 > v2:
+					return false
+				}
+			case reflect.Float32, reflect.Float64:
+				switch v1, v2 := dataList[i][field.Name].(float64), dataList[j][field.Name].(float64); {
+				case v1 < v2:
+					return true
+				case v1 > v2:
+					return false
+				}
+			case reflect.String:
+				switch v1, v2 := dataList[i][field.Name].(string), dataList[j][field.Name].(string); {
+				case v1 < v2:
+					return true
+				case v1 > v2:
+					return false
+				}
+			default:
+				return true
+			}
+		}
+		return true
+	})
 
 	var macroMap = make(map[string]any)
 	for _, macro := range r.GetMacroDecorators() {
@@ -64,10 +95,10 @@ func (r *jsonRender) Execute() error {
 	}
 
 	rootMap := map[string]any{
-		"dataSet": dataList,
+		r.ConfigName() + "List": dataList,
 	}
 	if len(macroMap) > 0 {
-		rootMap["macroSet"] = macroMap
+		rootMap[r.ConfigName()+"MacroMap"] = macroMap
 	}
 
 	// 序列化为 JSON
@@ -82,11 +113,21 @@ func (r *jsonRender) Execute() error {
 		return err
 	}
 
-	fmt.Printf("导出配置：%s\n", fp)
+	if err := r.Render.After(); err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func (r *jsonRender) Filename() string {
+func (r *JSONRender) Verify() error {
+	return nil
+}
+
+func (r *JSONRender) ConfigName() string {
+	return strcase.LowerCamelCase(r.Schema.TableNamePrefix + r.Name)
+}
+
+func (r *JSONRender) Filename() string {
 	return strcase.KebabCase(r.Schema.FilePrefix+r.Name) + ".json"
 }

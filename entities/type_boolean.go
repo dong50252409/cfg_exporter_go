@@ -34,14 +34,14 @@ func (b *Boolean) String() string {
 	return "bool"
 }
 
-func (b *Boolean) GetDefaultValue() string {
+func (b *Boolean) DefaultValue() string {
 	return "false"
 }
 
-func (b *Boolean) GetKind() reflect.Kind {
+func (b *Boolean) Kind() reflect.Kind {
 	return reflect.Bool
 }
 
-func (b *Boolean) GetCheckFunc() func(any) bool {
+func (b *Boolean) CheckFunc() func(any) bool {
 	return func(v any) bool { _, ok := v.(bool); return ok }
 }

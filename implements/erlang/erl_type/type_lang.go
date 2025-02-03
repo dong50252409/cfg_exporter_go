@@ -29,6 +29,6 @@ func (l *ErlLang) String() string {
 	return "binary()"
 }
 
-func (l *ErlLang) GetDefaultValue() string {
+func (l *ErlLang) DefaultValue() string {
 	return "<<>>"
 }

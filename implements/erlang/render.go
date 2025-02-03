@@ -10,10 +10,10 @@ import (
 	"runtime"
 )
 
-type erlangRender struct {
+type ERLRender struct {
 	*render.Render
-	hrlRender *hrlRender
-	erlRender *erlRender
+	hrlRender *HRender
+	erlRender *ERender
 }
 
 func init() {
@@ -21,25 +21,31 @@ func init() {
 }
 
 func newErlangRender(render *render.Render) render.IRender {
-	r := &erlangRender{render, &hrlRender{}, &erlRender{}}
-	r.hrlRender.erlangRender = r
-	r.erlRender.erlangRender = r
+	r := &ERLRender{render, &HRender{}, &ERender{}}
+	r.hrlRender.ERLRender = r
+	r.erlRender.ERLRender = r
 	return r
 }
 
 // Execute 执行导出
-func (r *erlangRender) Execute() error {
+func (r *ERLRender) Execute() error {
+	if err := r.Render.Before(); err != nil {
+		return err
+	}
 	if err := r.hrlRender.Execute(); err != nil {
 		return err
 	}
 	if err := r.erlRender.Execute(); err != nil {
 		return err
 	}
+	if err := r.Render.After(); err != nil {
+		return err
+	}
 	return nil
 }
 
 // Verify 验证导出结果
-func (r *erlangRender) Verify() error {
+func (r *ERLRender) Verify() error {
 	hrlDir := r.hrlRender.ExportDir()
 	erl := filepath.Join(r.erlRender.ExportDir(), r.erlRender.Filename())
 	var out string
@@ -59,6 +65,6 @@ func (r *erlangRender) Verify() error {
 }
 
 // ConfigName 配置名
-func (r *erlangRender) ConfigName() string {
+func (r *ERLRender) ConfigName() string {
 	return strcase.SnakeCase(r.Schema.TableNamePrefix + r.Name)
 }

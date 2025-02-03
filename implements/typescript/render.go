@@ -3,7 +3,6 @@ package typescript
 import (
 	"cfg_exporter/entities"
 	"cfg_exporter/render"
-	"fmt"
 	"github.com/stoewer/go-strcase"
 	"os"
 	"path/filepath"
@@ -46,7 +45,7 @@ const tsTemplate = `
 {{ template "interface" .}}
 `
 
-type tsRender struct {
+type TSRender struct {
 	*render.Render
 }
 
@@ -55,10 +54,14 @@ func init() {
 }
 
 func newtsRender(render *render.Render) render.IRender {
-	return &tsRender{render}
+	return &TSRender{render}
 }
 
-func (r *tsRender) Execute() error {
+func (r *TSRender) Execute() error {
+	if err := r.Render.Before(); err != nil {
+		return err
+	}
+
 	dir := r.ExportDir()
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
@@ -90,15 +93,20 @@ func (r *tsRender) Execute() error {
 		return err
 	}
 
-	fmt.Printf("导出配置：%s\n", fp)
-
+	if err := r.Render.After(); err != nil {
+		return err
+	}
 	return nil
 }
 
-func (r *tsRender) Filename() string {
+func (r *TSRender) Verify() error {
+	return nil
+}
+
+func (r *TSRender) Filename() string {
 	return strcase.KebabCase(r.Schema.FilePrefix+r.Name) + ".ts"
 }
 
-func (r *tsRender) ConfigName() string {
+func (r *TSRender) ConfigName() string {
 	return r.Schema.TableNamePrefix + r.Name
 }

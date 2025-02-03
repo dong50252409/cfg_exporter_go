@@ -3,7 +3,6 @@ package fb_type
 import (
 	"cfg_exporter/entities"
 	"fmt"
-	"github.com/stoewer/go-strcase"
 )
 
 type FBTuple struct {
@@ -37,13 +36,11 @@ func (fbt *FBTuple) String() string {
 		return fmt.Sprintf("[%s]", t.(*FBLang).String())
 	case *FBAny:
 		return fmt.Sprintf("[%s]", t.(*FBAny).String())
-	case *FBList, *FBTuple, *FBMap:
-		return fmt.Sprintf("[%sEntry]", strcase.UpperCamelCase(fbt.ITypeSystem.(*entities.Tuple).Field.Name))
 	default:
-		return "string"
+		return "[ubyte](flexbuffer)"
 	}
 }
 
-func (*FBTuple) GetDefaultValue() string {
+func (*FBTuple) DefaultValue() string {
 	return "[]"
 }

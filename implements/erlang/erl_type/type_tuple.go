@@ -28,6 +28,6 @@ func (*ErlTuple) String() string {
 	return "tuple()"
 }
 
-func (*ErlTuple) GetDefaultValue() string {
+func (*ErlTuple) DefaultValue() string {
 	return "{}"
 }

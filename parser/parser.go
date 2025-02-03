@@ -177,7 +177,7 @@ func (*Parser) ParseFieldComment(field *entities.Field, fcRow []string) {
 
 // ParseFieldDefaultValue 解析字段默认值
 func (*Parser) ParseFieldDefaultValue(field *entities.Field) {
-	field.DefaultValue = field.Type.GetDefaultValue()
+	field.DefaultValue = field.Type.DefaultValue()
 }
 
 // ParseRow 解析行
@@ -190,7 +190,7 @@ func (p *Parser) ParseRow(field *entities.Field, records [][]string) error {
 		} else {
 			cell := recordRows[field.Column]
 			if cell == "" {
-				if field.Type.GetKind() == reflect.String {
+				if field.Type.Kind() == reflect.String {
 					value, err = field.Type.ParseString(cell)
 				} else {
 					value = nil

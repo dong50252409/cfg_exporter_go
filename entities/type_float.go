@@ -4,6 +4,7 @@ import (
 	"cfg_exporter/util"
 	"maps"
 	"math"
+	"math/big"
 	"reflect"
 	"strconv"
 )
@@ -42,10 +43,15 @@ func NewFloat(typeStr string, field *Field) (ITypeSystem, error) {
 }
 
 func (f *Float) ParseString(str string) (any, error) {
-	float, err := strconv.ParseFloat(str, f.BitSize)
+	parseFloat, _, err := big.ParseFloat(str, 10, 0, big.ToNearestEven)
 	if err != nil {
 		return nil, ErrorTypeParseFailed(f, str)
 	}
+	if f.BitSize == 32 {
+		float, _ := parseFloat.Float32()
+		return float, nil
+	}
+	float, _ := parseFloat.Float64()
 	return float, nil
 }
 
@@ -60,18 +66,18 @@ func (f *Float) String() string {
 	return "float64"
 }
 
-func (f *Float) GetDefaultValue() string {
+func (f *Float) DefaultValue() string {
 	return "0.0"
 }
 
-func (f *Float) GetKind() reflect.Kind {
+func (f *Float) Kind() reflect.Kind {
 	if f.BitSize == 32 {
 		return reflect.Float32
 	}
 	return reflect.Float64
 }
 
-func (f *Float) GetCheckFunc() func(any) bool {
+func (f *Float) CheckFunc() func(any) bool {
 	if f.BitSize == 32 {
 		return func(v any) bool {
 			v1, ok := v.(float64)
