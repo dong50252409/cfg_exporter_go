@@ -47,10 +47,6 @@ func (f *Float) ParseString(str string) (any, error) {
 	if err != nil {
 		return nil, ErrorTypeParseFailed(f, str)
 	}
-	if f.BitSize == 32 {
-		float, _ := parseFloat.Float32()
-		return float, nil
-	}
 	float, _ := parseFloat.Float64()
 	return float, nil
 }

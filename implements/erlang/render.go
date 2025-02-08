@@ -29,16 +29,13 @@ func newErlangRender(render *render.Render) render.IRender {
 
 // Execute 执行导出
 func (r *ERLRender) Execute() error {
-	if err := r.Render.Before(); err != nil {
+	if err := r.Render.ExecuteBefore(); err != nil {
 		return err
 	}
 	if err := r.hrlRender.Execute(); err != nil {
 		return err
 	}
 	if err := r.erlRender.Execute(); err != nil {
-		return err
-	}
-	if err := r.Render.After(); err != nil {
 		return err
 	}
 	return nil
@@ -48,6 +45,7 @@ func (r *ERLRender) Execute() error {
 func (r *ERLRender) Verify() error {
 	hrlDir := r.hrlRender.ExportDir()
 	erl := filepath.Join(r.erlRender.ExportDir(), r.erlRender.Filename())
+	fmt.Printf("开始验证生成结果：%s\n", erl)
 	var out string
 	switch runtime.GOOS {
 	case "windows":

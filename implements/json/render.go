@@ -23,7 +23,7 @@ func newJSONRender(render *render.Render) render.IRender {
 }
 
 func (r *JSONRender) Execute() error {
-	if err := r.Render.Before(); err != nil {
+	if err := r.Render.ExecuteBefore(); err != nil {
 		return err
 	}
 
@@ -110,10 +110,6 @@ func (r *JSONRender) Execute() error {
 
 	_, err = fileIO.Write(jsonData)
 	if err != nil {
-		return err
-	}
-
-	if err := r.Render.After(); err != nil {
 		return err
 	}
 

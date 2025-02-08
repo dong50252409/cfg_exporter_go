@@ -55,7 +55,7 @@ func newtsRender(render *render.Render) render.IRender {
 }
 
 func (r *FBSRender) Execute() error {
-	if err := r.Render.Before(); err != nil {
+	if err := r.Render.ExecuteBefore(); err != nil {
 		return err
 	}
 
@@ -100,9 +100,6 @@ func (r *FBSRender) Execute() error {
 		return fmt.Errorf("error:%s", err)
 	}
 
-	if err = r.Render.After(); err != nil {
-		return err
-	}
 	return nil
 }
 

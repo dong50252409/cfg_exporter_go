@@ -102,16 +102,13 @@ func (r *ERender) Execute() error {
 	tmpl := template.New("erl").Funcs(entities.FuncMap)
 
 	for _, tmplStr := range []string{erlHeadTemplate, erlGetTemplate, erlListTemplate, erlTemplate} {
-		//for _, tmplStr := range []string{erlTemplate} {
-		tmpl, err = tmpl.Parse(tmplStr)
-		if err != nil {
+		if tmpl, err = tmpl.Parse(tmplStr); err != nil {
 			return err
 		}
 	}
 
 	// 执行模板渲染并输出到文件
-	err = tmpl.Execute(fileIO, data)
-	if err != nil {
+	if err = tmpl.Execute(fileIO, data); err != nil {
 		return err
 	}
 

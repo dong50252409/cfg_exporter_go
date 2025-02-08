@@ -40,16 +40,11 @@ func (r Render) ExportDir() string {
 	return r.Schema.Destination
 }
 
-func (r Render) Before() error {
+func (r Render) ExecuteBefore() error {
 	fmt.Printf("开始导出配置：%s\n", r.Table.Filename)
 	dir := r.ExportDir()
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return fmt.Errorf("导出路径创建失败 %s", err)
 	}
-	return nil
-}
-
-func (r Render) After() error {
-	fmt.Printf("配置导出完成：%s\n", r.Table.Filename)
 	return nil
 }

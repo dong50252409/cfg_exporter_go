@@ -23,19 +23,23 @@ func main() {
 		flag.Usage()
 		return
 	}
-	err := filepath.WalkDir(config.Config.Source, func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if !d.IsDir() {
-			if err := run(path); err != nil {
+	if config.Config.UI {
+		startUI()
+	} else {
+		err := filepath.WalkDir(config.Config.Source, func(path string, d os.DirEntry, err error) error {
+			if err != nil {
 				return err
 			}
+			if !d.IsDir() {
+				if err := run(path); err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			panic(err)
 		}
-		return nil
-	})
-	if err != nil {
-		panic(err)
 	}
 }
 
@@ -73,7 +77,7 @@ func readFile(path string) ([][]string, error) {
 }
 
 func parserTable(path string, records [][]string) (*entities.Table, error) {
-	p, err := parser.NewParser(config.SchemaName)
+	p, err := parser.NewParser(config.Config.SchemaName)
 	if err != nil {
 		return nil, err
 	}
@@ -86,14 +90,16 @@ func parserTable(path string, records [][]string) (*entities.Table, error) {
 }
 
 func renderTable(t *entities.Table) error {
-	if r, err := render.NewRender(config.SchemaName, t); err != nil {
+	if r, err := render.NewRender(config.Config.SchemaName, t); err != nil {
 		return err
 	} else {
 		if err = r.Execute(); err != nil {
 			return err
 		}
-		if err = r.Verify(); err != nil {
-			return err
+		if config.Config.Verify {
+			if err = r.Verify(); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

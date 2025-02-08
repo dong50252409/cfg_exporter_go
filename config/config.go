@@ -1,16 +1,6 @@
 package config
 
-import (
-	"github.com/BurntSushi/toml"
-)
-
 var Config TomlConfig
-
-func init() {
-	if _, err := toml.DecodeFile("config.toml", &Config); err != nil {
-		panic(err)
-	}
-}
 
 type TomlConfig struct {
 	Source            string            `toml:"source"`
@@ -18,6 +8,9 @@ type TomlConfig struct {
 	FieldTypeRow      int               `toml:"field_type_row"`
 	FieldDecoratorRow int               `toml:"field_decorator_row"`
 	BodyStartRow      int               `toml:"body_start_row"`
+	UI                bool              `toml:"ui"`
+	Verify            bool              `toml:"verify"`
+	SchemaName        string            `toml:"default_schema"`
 	Schema            map[string]Schema `toml:"schema"`
 }
 
