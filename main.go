@@ -17,7 +17,6 @@ import (
 )
 
 func main() {
-	flag.Parse()
 
 	if flag.NFlag() == 0 || config.Help {
 		flag.Usage()

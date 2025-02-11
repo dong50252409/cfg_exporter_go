@@ -11,38 +11,100 @@ import (
 
 const headTemplate = `
 {{- define "head" -}}
-import { BaseData_Json } from "../../BaseData"
+import * as flatbuffers from '../../../../Plugins/FlatBuffers';
+import { BaseData_Fbs } from '../../BaseData';
+import { FbsData, FbsDataList } from '../../FbsDataListView';
+import { {{ .Table.ConfigName | toUpperCamelCase }} } from '../FbsCls/{{ .Table.Name | toKebabCase }}';
+import { {{ .Table.ConfigName | toUpperCamelCase }}List } from '../FbsCls/{{ .Table.Name | toKebabCase }}-list';
 {{- end -}}
 `
 
-const classTemplate = `
-{{- define "class" -}}
-{{- $pkFields := .Table.GetPrimaryKeyFields -}}
-{{- $pkLen := len $pkFields | add -1 -}}
-export class {{ .Table.Name | toUpperCamelCase }} extends BaseData_Json {
-    get({{ range $fieldIndex, $field := $pkFields }}{{ $field.Name | toLowerCamelCase }}: {{ $field.Type }}{{ if lt $fieldIndex $pkLen }}, {{ end }}{{ end }}): any {
-        return super.get({{ range $fieldIndex, $field := $pkFields }}{{ $field.Name | toLowerCamelCase }}{{ if lt $fieldIndex $pkLen }}, {{ end }}{{ end }})
+const baseClassTemplate = `
+{{- define "base_class" -}}
+export class {{ .Table.Name | toUpperCamelCase }} extends BaseData_Fbs<Cfg{{ .Table.Name | toUpperCamelCase }}> {
+    public getFbsDataList(data: ArrayBuffer): FbsDataList<{{ .Table.InnerConfigName }}>{
+        return new {{ .Table.InnerConfigName }}List(data);
+    }
+
+{{- $pkFields := .Table.GetPrimaryKeyFields }}
+{{- $pkLen := $pkFields | len | add -1 }}
+    get({{ range $pkIndex, $pkField := $pkFields }}{{ $pkField.Name | toLowerCamelCase }} :{{ $pkField.Type }}{{ if lt $pkIndex $pkLen }}, {{ end }}{{ end }}): {{ .Table.InnerConfigName }} {
+	    return super.get({{ range $pkIndex, $pkField := $pkFields -}}{{ $pkField.Name | toLowerCamelCase }}{{ if lt $pkIndex $pkLen -}}, {{ end }}{{ end }});
     }
 }
 {{- end -}}
 `
 
-const interfaceTemplate = `
-{{- define "interface" -}}
-export interface {{ .Table.ConfigName | toUpperCamelCase }} {
-    {{- range $_, $field := .Table.Fields }}
-    readonly {{ $field.Name | toLowerCamelCase }}{{ if not $field.IsPrimaryKey }}?{{ end }}: {{ $field.Type }};
-    {{- end }}
+const innerClass1Template = `
+{{- define "inner_class1" -}}
+export class {{ .Table.InnerConfigName }} extends FbsData {
+    private _fbs: {{ .Table.ConfigName | toUpperCamelCase }};
+
+    __init(fbs: {{ .Table.ConfigName | toUpperCamelCase }}) {
+		this._fbs = fbs;
+    }
+
+    public clone(): {{ .Table.InnerConfigName }} {
+	    let newFD: {{ .Table.InnerConfigName }} = new {{ .Table.InnerConfigName }}();
+	    newFD.__fbs = new {{ .Table.ConfigName | toUpperCamelCase }}();
+        newFD.__fbs.bb = this._fbs.bb;
+        newFD._fbs.bb_pos = this._fbs.bb_pos;
+	    return newFD;
+    }
+
+    {{ range $index, $field := .Table.Fields }}
+	public get {{ $field.Name | toLowerCamelCase }}(): {{ $field.Type }} {
+		return this._fbs.{{ $field.Name | toLowerCamelCase }}();
+	}
+    {{ end }}
 }
+{{- end -}}
+`
+const innerClass2Template = `
+{{- define "inner_class2" -}}
+export class {{ .Table.InnerConfigName }}List extends FbsDataList<{{ .Table.InnerConfigName }}> {
+	private _fbsList: {{ .Table.InnerConfigName | toUpperCamelCase }}List;
+
+	__init(data: ArrayBuffer) {
+		this._fbsList = {{ .Table.ConfigName | toUpperCamelCase }}List.getRootAs{{ .Table.ConfigName | toUpperCamelCase }}List(new flatbuffers.ByteBuffer(new Uint8Array(data)));
+	}
+
+    public get length(): number {
+        return this._fbsList.{{ .Table.Name | toLowerCamelCase }}Length();
+    }
+
+    public getFbsData(index: number, obj?: {{ .Table.InnerConfigName | toUpperCamelCase }}): {{ .Table.InnerConfigName | toUpperCamelCase }} {
+        obj = obj ? obj : new {{ .Table.InnerConfigName | toUpperCamelCase }}();
+        obj.__init(this.__fbsList.{{ .Table.Name | toLowerCamelCase }}(index) as {{ .Table.ConfigName | toUpperCamelCase}});
+        return obj;
+    }
+}
+{{- end -}}
+`
+
+const enumTemplate = `
+{{- define "enum" -}}
+{{ range $_, $macro := .Table.GetMacroDecorators }}
+export enum {{ $macro.MacroName | toUpperCamelCase }}Enum { 
+	{{- range $_, $macroDetail := $macro.List }}
+    /** {{ $macroDetail.Comment }} */
+    {{ $macroDetail.Key | toUpperSnakeCase }} = {{ $macroDetail.Value }},
+	{{- end }}
+}
+{{ end }}
 {{- end -}}
 `
 
 const tsTemplate = `
 {{- template "head" .}}
 
-{{ template "class" .}}
+{{ template "base_class" .}}
 
-{{ template "interface" .}}
+{{ template "inner_class1" .}}
+
+{{ template "inner_class2" .}}
+
+{{ template "enum" . -}}
 `
 
 type TSRender struct {
@@ -80,7 +142,7 @@ func (r *TSRender) Execute() error {
 	// 解析模板字符串
 	tmpl := template.New("ts").Funcs(entities.FuncMap)
 
-	for _, tmplStr := range []string{headTemplate, classTemplate, interfaceTemplate, tsTemplate} {
+	for _, tmplStr := range []string{headTemplate, baseClassTemplate, innerClass1Template, innerClass2Template, enumTemplate, tsTemplate} {
 		tmpl, err = tmpl.Parse(tmplStr)
 		if err != nil {
 			return err
@@ -106,4 +168,8 @@ func (r *TSRender) Filename() string {
 
 func (r *TSRender) ConfigName() string {
 	return r.Schema.TableNamePrefix + r.Name
+}
+
+func (r *TSRender) InnerConfigName() string {
+	return strcase.UpperCamelCase("cfg_" + r.Name)
 }

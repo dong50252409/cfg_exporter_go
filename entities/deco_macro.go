@@ -14,6 +14,7 @@ type MacroDetail struct {
 }
 
 type Macro struct {
+	// 宏名，一个表可能包含多个不同的宏数据
 	MacroName    string
 	KeyField     *Field
 	ValueField   *Field

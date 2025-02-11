@@ -11,7 +11,7 @@ field_decorator_row = 3
 # 主体数据起始行号
 body_start_row = 6
 # 是否启用ui界面
-ui = true
+ui = false
 # 是否检验生成后的配置
 verify = true
 # 默认执行的导出模式
@@ -35,9 +35,9 @@ field_name_row = 4
 # 导出目标路径
 destination = "./samples/typescript/"
 # 文件前缀
-file_prefix = "cfg_"
+file_prefix = ""
 # 表名前缀
-table_name_prefix = "cfg_"
+table_name_prefix = "fbs_"
 
 # json导出配置
 [schema.json]
@@ -46,9 +46,9 @@ field_name_row = 4
 # 导出目标路径
 destination = "./samples/json/"
 # 文件前缀
-file_prefix = "cfg_"
+file_prefix = ""
 # 表名前缀
-table_name_prefix = ""
+table_name_prefix = "fbs_"
 
 # flatbuffers导出配置
 [schema.flatbuffers]
@@ -57,10 +57,10 @@ field_name_row = 4
 # 导出目标路径
 destination = "./samples/flatbuffers/"
 # 文件前缀
-file_prefix = "cfg_"
+file_prefix = ""
 # 表名前缀
-table_name_prefix = ""
+table_name_prefix = "fbs_"
 # flatc可执行文件的位置
 flatc = "./samples/flatbuffers/flatc.exe"
 # 命名空间
-namespace = "game_config"
+namespace = ""

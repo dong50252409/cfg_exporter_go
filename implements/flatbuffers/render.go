@@ -39,9 +39,13 @@ root_type {{ .Table.ConfigName }}List;
 `
 
 const fbTemplate = `
-{{- "namespace" }} {{ .Table.Namespace }};
+{{- if ne .Table.Schema.Namespace "" -}}
+{{"namespace" }} {{ .Table.Namespace }};
 
 {{ template "tableSchema" . }}
+{{ else }}
+{{- template "tableSchema" . }}
+{{ end }}
 
 {{ template "rootType" . }}
 `
