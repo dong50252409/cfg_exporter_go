@@ -15,7 +15,7 @@ type Float struct {
 }
 
 var (
-	floatDefaultBitSizes = "32"
+	floatDefaultBitSizes = "64"
 	floatByteSizes       = map[string]int{
 		"32": 32,
 		"64": 64,
@@ -39,13 +39,13 @@ func NewFloat(typeStr string, field *Field) (ITypeSystem, error) {
 	for k := range maps.Keys(floatByteSizes) {
 		l = append(l, k)
 	}
-	return nil, ErrorTypeBaseInvalid(&Float{}, l)
+	return nil, NewTypeErrorBaseInvalid(&Float{}, l)
 }
 
 func (f *Float) ParseString(str string) (any, error) {
 	parseFloat, _, err := big.ParseFloat(str, 10, 0, big.ToNearestEven)
 	if err != nil {
-		return nil, ErrorTypeParseFailed(f, str)
+		return nil, NewTypeErrorParseFailed(f, str)
 	}
 	float, _ := parseFloat.Float64()
 	return float, nil

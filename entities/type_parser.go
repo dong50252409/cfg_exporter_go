@@ -23,7 +23,7 @@ const (
 	RPAREN                    // 表示右圆括号
 	LBRACE                    // 表示左大括号
 	RBRACE                    // 表示右大括号
-	COLON                     // 表示冒号
+	EQUAL                     // 表示等号
 	COMMA                     // 表示逗号
 )
 
@@ -157,7 +157,7 @@ loop:
 		switch l.currentChar {
 		case 0:
 			break loop
-		case ']', ')', '}', ',', ':', '\t', '\n', '\v', '\f', '\r', ' ', 0x85, 0xA0: // 遇到这些字符则Raw类型已经结束
+		case ']', ')', '}', ',', '=', '\t', '\n', '\v', '\f', '\r', ' ', 0x85, 0xA0: // 遇到这些字符则Raw类型已经结束
 			break loop
 		default:
 			result.WriteByte(l.currentChar)
@@ -192,9 +192,9 @@ func (l *lexer) getNextToken() token {
 		case '}':
 			l.advance()
 			return token{Type: RBRACE, Value: "}"}
-		case ':':
+		case '=':
 			l.advance()
-			return token{Type: COLON, Value: ":"}
+			return token{Type: EQUAL, Value: "="}
 		case ',':
 			l.advance()
 			return token{Type: COMMA, Value: ","}
@@ -203,8 +203,9 @@ func (l *lexer) getNextToken() token {
 		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 			return l.number()
 		case 't', 'T', 'f', 'F':
+			// 判断 前端是否是ture或false，后面是否跟着其他内容，如果跟着则不是布尔值
 			if (strings.HasPrefix(l.text[l.pos:], "true") || strings.HasPrefix(l.text[l.pos:], "TRUE")) &&
-				!(unicode.IsLetter(rune(l.text[l.pos+5])) || unicode.IsDigit(rune(l.text[l.pos+5]))) {
+				!(unicode.IsLetter(rune(l.text[l.pos+4])) || unicode.IsDigit(rune(l.text[l.pos+4]))) {
 				return l.boolean()
 			}
 			if (strings.HasPrefix(l.text[l.pos:], "false") || strings.HasPrefix(l.text[l.pos:], "FALSE")) &&
@@ -277,7 +278,7 @@ func (p *parser) parseMap() map[any]any {
 	m := make(map[any]any)
 	for p.currentToken.Type != RBRACE {
 		key := p.parse()
-		p.eat(COLON)
+		p.eat(EQUAL)
 		value := p.parse()
 		m[key] = value
 		if p.currentToken.Type == COMMA {

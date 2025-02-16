@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"strings"
 )
 
 type Tuple struct {
@@ -23,8 +22,8 @@ func NewTuple(typeStr string, field *Field) (ITypeSystem, error) {
 	} else {
 		t, err := NewType(param, field)
 		if err != nil {
-			if errors.Is(err, ErrorTypeNotSupported) {
-				return nil, ErrorTypeTupleInvalid(typeStr)
+			if errors.Is(err, TypeErrorNotSupported) {
+				return nil, NewTypeErrorTupleInvalid(typeStr)
 			}
 			return nil, err
 		}
@@ -33,9 +32,12 @@ func NewTuple(typeStr string, field *Field) (ITypeSystem, error) {
 }
 
 func (t *Tuple) ParseString(str string) (any, error) {
+	if !(str[0] == '(' && str[len(str)-1] == ')') {
+		return nil, NewTypeErrorParseFailed(t, str)
+	}
 	v, err := ParseString(str)
 	if err != nil {
-		return nil, ErrorTypeParseFailed(t, str)
+		return nil, NewTypeErrorParseFailed(t, str)
 	}
 	if v == nil {
 		return v, nil
@@ -45,7 +47,7 @@ func (t *Tuple) ParseString(str string) (any, error) {
 		for i, e := range v.(TupleT) {
 			if e != nil {
 				if !checkFunc(e) {
-					return nil, ErrorTypeNotMatch(t, i, e)
+					return nil, NewTypeErrorNotMatch(t, i, e)
 				}
 			} else {
 				break
@@ -56,15 +58,16 @@ func (t *Tuple) ParseString(str string) (any, error) {
 }
 
 func (*Tuple) Convert(val any) string {
-	var strList []string
-	for _, e := range val.(TupleT) {
-		if e != nil {
-			strList = append(strList, fmt.Sprintf("%v", e))
-		} else {
-			break
-		}
-	}
-	return fmt.Sprintf("(%v)", strings.Join(strList, ","))
+	//var strList []string
+	//for _, e := range val.(TupleT) {
+	//	if e != nil {
+	//		strList = append(strList, fmt.Sprintf("%v", e))
+	//	} else {
+	//		break
+	//	}
+	//}
+	//return fmt.Sprintf("(%v)", strings.Join(strList, ","))
+	return fmt.Sprintf("(%v)", val)
 }
 
 func (t *Tuple) String() string {

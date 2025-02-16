@@ -12,7 +12,7 @@ type Field struct {
 	// 字段描述
 	Comment string
 	// 装饰器
-	Decorators map[string]any
+	Decorators map[string]IFieldDecorator
 	// 是否为主键
 	IsPrimaryKey bool
 	// 默认值

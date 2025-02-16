@@ -25,9 +25,13 @@ func (l *TSList) Convert(val any) string {
 }
 
 func (l *TSList) String() string {
-	return "any[]"
+	return "any"
 }
 
 func (*TSList) DefaultValue() string {
 	return "[]"
+}
+
+func (*TSList) Decorator() string {
+	return "@cacheObjRes()"
 }

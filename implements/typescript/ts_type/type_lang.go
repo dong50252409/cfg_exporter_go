@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-type ErlLang struct {
+type TSLang struct {
 	entities.ITypeSystem
 }
 
@@ -18,13 +18,17 @@ func newLang(typeStr string, field *entities.Field) (entities.ITypeSystem, error
 	if err != nil {
 		return nil, err
 	}
-	return &ErlLang{ITypeSystem: lang}, nil
+	return &TSLang{ITypeSystem: lang}, nil
 }
 
-func (l *ErlLang) Convert(val any) string {
+func (l *TSLang) Convert(val any) string {
 	return fmt.Sprintf("%s", val)
 }
 
-func (l *ErlLang) String() string {
+func (l *TSLang) String() string {
 	return "string"
+}
+
+func (*TSLang) Decorator() string {
+	return "@cacheStrRes()"
 }

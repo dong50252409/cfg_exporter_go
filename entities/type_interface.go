@@ -1,6 +1,10 @@
 package entities
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+	"strings"
+)
 
 type ITypeSystem interface {
 	// ParseString 解析字符串为Golang数据
@@ -24,6 +28,17 @@ type ITypeSystem interface {
 
 // TupleT 元组 最多支持10个元素
 type TupleT [10]interface{}
+
+func (t TupleT) String() string {
+	var l []string
+	for _, e := range t {
+		if e == nil {
+			break
+		}
+		l = append(l, fmt.Sprintf("%v", e))
+	}
+	return strings.Join(l, ",")
+}
 
 // AnyT 原始类型
 type AnyT string

@@ -23,3 +23,5 @@ func newFloat(typeStr string, field *entities.Field) (entities.ITypeSystem, erro
 func (f *TSFloat) String() string {
 	return "number"
 }
+
+func (*TSFloat) Decorator() string { return "" }

@@ -5,8 +5,11 @@ type IDecorator interface {
 }
 
 type ITableDecorator interface {
+	IDecorator
 	RunTableDecorator(tbl *Table) error
 }
+
 type IFieldDecorator interface {
+	IDecorator
 	RunFieldDecorator(tbl *Table, field *Field) error
 }

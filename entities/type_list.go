@@ -23,8 +23,8 @@ func NewList(typeStr string, field *Field) (ITypeSystem, error) {
 	} else {
 		t, err := NewType(param, field)
 		if err != nil {
-			if errors.Is(err, ErrorTypeNotSupported) {
-				return nil, ErrorTypeListInvalid(typeStr)
+			if errors.Is(err, TypeErrorNotSupported) {
+				return nil, NewTypeErrorListInvalid(typeStr)
 			}
 			return nil, err
 		}
@@ -33,15 +33,18 @@ func NewList(typeStr string, field *Field) (ITypeSystem, error) {
 }
 
 func (l *List) ParseString(str string) (any, error) {
+	if !(str[0] == '[' && str[len(str)-1] == ']') {
+		return nil, NewTypeErrorParseFailed(l, str)
+	}
 	v, err := ParseString(str)
 	if err != nil {
-		return nil, ErrorTypeParseFailed(l, str)
+		return nil, NewTypeErrorParseFailed(l, str)
 	}
 	if l.T != nil {
 		checkFunc := l.T.CheckFunc()
 		for i, e := range v.([]any) {
 			if !checkFunc(e) {
-				return nil, ErrorTypeNotMatch(l, i, e)
+				return nil, NewTypeErrorNotMatch(l, i, e)
 			}
 		}
 	}

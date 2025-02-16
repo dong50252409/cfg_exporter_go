@@ -6,61 +6,61 @@ import (
 	"strings"
 )
 
-// ErrorTypeNotSupported 类型不支持
-var ErrorTypeNotSupported error
+// TypeErrorNotSupported 类型不支持
+var TypeErrorNotSupported error
 
-func errorTypeNotSupported(typeStr string) error {
-	ErrorTypeNotSupported = errors.New(fmt.Sprintf("%s 不支持的类型", typeStr))
-	return ErrorTypeNotSupported
+func NewTypeErrorNotSupported(typeStr string) error {
+	TypeErrorNotSupported = errors.New(fmt.Sprintf("%s 不支持的类型", typeStr))
+	return TypeErrorNotSupported
 }
 
-// ErrorTypeBaseInvalid 类型格式错误
-func ErrorTypeBaseInvalid(t ITypeSystem, lst []string) error {
+// NewTypeErrorBaseInvalid 类型格式错误
+func NewTypeErrorBaseInvalid(t ITypeSystem, lst []string) error {
 	return fmt.Errorf("格式错误 %s|%s(%s)", t.String(), t.String(), strings.Join(lst, "|"))
 }
 
-// ErrorTypeListInvalid 类型格式错误
-func ErrorTypeListInvalid(typeStr string) error {
+// NewTypeErrorListInvalid 类型格式错误
+func NewTypeErrorListInvalid(typeStr string) error {
 	return fmt.Errorf("格式错误 list%s", typeStr)
 }
 
-// ErrorTypeTupleInvalid 元组类型格式错误
-func ErrorTypeTupleInvalid(typeStr string) error {
+// NewTypeErrorTupleInvalid 元组类型格式错误
+func NewTypeErrorTupleInvalid(typeStr string) error {
 	return fmt.Errorf("格式错误 tuple%s", typeStr)
 }
 
-// ErrorTypeMapKeyInvalid 字典类型格式错误
-func ErrorTypeMapKeyInvalid(typeStr string) error {
+// NewTypeErrorMapKeyInvalid 字典类型格式错误
+func NewTypeErrorMapKeyInvalid(typeStr string) error {
 	return fmt.Errorf("格式错误 map(%s, ...)", typeStr)
 }
 
-// ErrorTypeMapValueInvalid 字典类型格式错误
-func ErrorTypeMapValueInvalid(typeStr string) error {
+// NewTypeErrorMapValueInvalid 字典类型格式错误
+func NewTypeErrorMapValueInvalid(typeStr string) error {
 	return fmt.Errorf("键格式错误 map(..., %s)", typeStr)
 }
 
-// ErrorTypeMapInvalid 字典类型格式错误
-func ErrorTypeMapInvalid(typeStr string) error {
+// NewTypeErrorMapInvalid 字典类型格式错误
+func NewTypeErrorMapInvalid(typeStr string) error {
 	return fmt.Errorf("值格式错误 %s", typeStr)
 }
 
-// ErrorTypeParseFailed 类型解析失败
-func ErrorTypeParseFailed(parentType ITypeSystem, str string) error {
+// NewTypeErrorParseFailed 类型解析失败
+func NewTypeErrorParseFailed(parentType ITypeSystem, str string) error {
 	return fmt.Errorf("%s 类型无法解析 %s", parentType.String(), str)
 }
 
-// ErrorTypeNotMatch 类型匹配
-func ErrorTypeNotMatch(t ITypeSystem, index int, element any) error {
+// NewTypeErrorNotMatch 类型匹配
+func NewTypeErrorNotMatch(t ITypeSystem, index int, element any) error {
 	return fmt.Errorf("第 %d 个元素 %v 与类型 %s 不匹配", index+1, element, formatTypeSign(t))
 }
 
-// ErrorTypeMapKeyNotMatch 键类型匹配
-func ErrorTypeMapKeyNotMatch(t ITypeSystem, key any) error {
+// NewTypeErrorMapKeyNotMatch 键类型匹配
+func NewTypeErrorMapKeyNotMatch(t ITypeSystem, key any) error {
 	return fmt.Errorf("键:%v 与类型 %s 不匹配", key, formatTypeSign(t))
 }
 
-// ErrorTypeMapValueNotMatch 值类型匹配
-func ErrorTypeMapValueNotMatch(t ITypeSystem, val any) error {
+// NewTypeErrorMapValueNotMatch 值类型匹配
+func NewTypeErrorMapValueNotMatch(t ITypeSystem, val any) error {
 	return fmt.Errorf("值:%v 与类型 %s 不匹配", val, formatTypeSign(t))
 }
 

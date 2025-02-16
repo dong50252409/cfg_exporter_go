@@ -2,6 +2,7 @@ package entities
 
 import (
 	"cfg_exporter/config"
+	"cfg_exporter/util"
 	"fmt"
 )
 
@@ -23,11 +24,10 @@ func (*NotNull) Name() string {
 }
 
 func (*NotNull) RunFieldDecorator(tbl *Table, field *Field) error {
-	_, ok := field.Decorators["not_null"]
 	for rowIndex, row := range tbl.DataSet {
 		v := row[field.ColIndex]
-		if v == nil || v == "" || !ok {
-			return fmt.Errorf("第 %d 行 数值不能为空", rowIndex+config.Config.BodyStartRow)
+		if v == nil || v == "" {
+			return fmt.Errorf("单元格：%s 数值不能为空", util.ToCell(rowIndex+config.Config.BodyStartRow, field.Column))
 		}
 	}
 	return nil

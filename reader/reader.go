@@ -1,7 +1,6 @@
 package reader
 
 import (
-	"cfg_exporter/config"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -51,15 +50,6 @@ func (r *Reader) Read() ([][]string, error) {
 
 	if records == nil || len(records) == 0 {
 		return nil, errorTableNotSheet(r.Path)
-	}
-
-	// 删除空行
-	for index := config.Config.BodyStartRow - 1; index < len(records); {
-		if records[index] == nil {
-			records = append(records[:index], records[index+1:]...)
-		} else {
-			index++
-		}
 	}
 
 	return records, nil

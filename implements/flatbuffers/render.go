@@ -3,6 +3,7 @@ package flatbuffers
 import (
 	"cfg_exporter/entities"
 	"cfg_exporter/implements/json"
+	"cfg_exporter/parser"
 	"cfg_exporter/render"
 	"fmt"
 	"github.com/stoewer/go-strcase"
@@ -75,7 +76,7 @@ func (r *FBSRender) Execute() error {
 	data := map[string]any{"Table": r}
 
 	// 解析模板字符串
-	tmpl := template.New("fbs").Funcs(entities.FuncMap)
+	tmpl := template.New("flatbuffers").Funcs(entities.FuncMap)
 
 	for _, tmplStr := range []string{dataSetTemplate, tailTemplate, fbTemplate} {
 		if tmpl, err = tmpl.Parse(tmplStr); err != nil {
@@ -88,17 +89,22 @@ func (r *FBSRender) Execute() error {
 		return err
 	}
 
-	jsonRender, err := render.NewRender("json", r.Table)
+	jsonParser, err := parser.CloneParser("json", r.Table)
 	if err != nil {
 		return err
 	}
-	jRender := jsonRender.(*json.JSONRender)
-	if err = jRender.Execute(); err != nil {
+
+	jsonRender, err := render.NewRender("json", jsonParser.GetTable())
+	if err != nil {
+		return err
+	}
+
+	if err = jsonRender.Execute(); err != nil {
 		return err
 	}
 
 	fbFilename := filepath.Join(dir, r.Filename())
-	jsonFilename := filepath.Join(jRender.ExportDir(), jRender.Filename())
+	jsonFilename := filepath.Join(jsonRender.(*json.JSONRender).ExportDir(), jsonRender.(*json.JSONRender).Filename())
 	cmd := exec.Command(r.Schema.Flatc, "--no-warnings", "--unknown-json", "-o", dir, "-b", fbFilename, jsonFilename)
 	if _, err = cmd.Output(); err != nil {
 		return fmt.Errorf("error:%s", err)

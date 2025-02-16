@@ -10,12 +10,8 @@ field_type_row = 2
 field_decorator_row = 3
 # 主体数据起始行号
 body_start_row = 6
-# 是否启用ui界面
-ui = false
 # 是否检验生成后的配置
 verify = true
-# 默认执行的导出模式
-default_schema =""
 
 # Erlang导出配置
 [schema.erlang]
@@ -48,7 +44,7 @@ destination = "./samples/json/"
 # 文件前缀
 file_prefix = ""
 # 表名前缀
-table_name_prefix = "fbs_"
+table_name_prefix = ""
 
 # flatbuffers导出配置
 [schema.flatbuffers]

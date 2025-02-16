@@ -2,12 +2,17 @@ package entities
 
 import (
 	"cfg_exporter/config"
+	"cfg_exporter/util"
 	"fmt"
 )
 
 // PrimaryKey 主键
 type PrimaryKey struct {
 	Fields []*Field
+}
+type pair struct {
+	field *Field
+	value interface{}
 }
 
 func init() {
@@ -42,7 +47,7 @@ func (pk *PrimaryKey) RunTableDecorator(tbl *Table) error {
 		for index, field := range pk.Fields {
 			item := row[field.ColIndex]
 			if item == nil {
-				return fmt.Errorf("第 %d 行 主键不能为空", rowIndex+config.Config.BodyStartRow)
+				return fmt.Errorf("单元格：%s 主键不能为空", util.ToCell(rowIndex+config.Config.BodyStartRow, field.Column))
 			}
 			items[index] = item
 		}

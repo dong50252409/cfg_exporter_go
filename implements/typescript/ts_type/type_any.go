@@ -26,5 +26,9 @@ func (s *TSAny) Convert(val any) string {
 }
 
 func (s *TSAny) String() string {
-	return "string"
+	return "any"
+}
+
+func (*TSAny) Decorator() string {
+	return "@cacheObjRes()"
 }

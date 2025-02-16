@@ -25,9 +25,13 @@ func (*TSMap) Convert(val any) string {
 }
 
 func (m *TSMap) String() string {
-	return "Map<any, any>"
+	return "any"
 }
 
 func (*TSMap) DefaultValue() string {
 	return "new Map()"
+}
+
+func (*TSMap) Decorator() string {
+	return "@cacheObjRes()"
 }

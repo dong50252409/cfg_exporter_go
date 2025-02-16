@@ -25,9 +25,13 @@ func (*TSTuple) Convert(val any) string {
 }
 
 func (*TSTuple) String() string {
-	return "any[]"
+	return "any"
 }
 
 func (*TSTuple) DefaultValue() string {
 	return "[]"
+}
+
+func (*TSTuple) Decorator() string {
+	return "@cacheObjRes()"
 }

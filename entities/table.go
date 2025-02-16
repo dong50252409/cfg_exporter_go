@@ -10,14 +10,14 @@ type Table struct {
 	// 字段
 	Fields []*Field
 	// 装饰器
-	Decorators []any
+	Decorators []ITableDecorator
 	// 主体数据
 	DataSet [][]any
 	// 原始数据
 	Records [][]string
 }
 
-// GetFieldByName 获取字段
+// GetFieldByName 获取字段根据字段名
 func (tbl *Table) GetFieldByName(fieldName string) *Field {
 	for _, field := range tbl.Fields {
 		if field.Name == fieldName {
@@ -27,11 +27,23 @@ func (tbl *Table) GetFieldByName(fieldName string) *Field {
 	return nil
 }
 
-// GetFieldByColIndex 获取字段
+// GetFieldByColIndex 获取字段根据列索引
 func (tbl *Table) GetFieldByColIndex(colIndex int) *Field {
 	for _, field := range tbl.Fields {
 		if field.ColIndex == colIndex {
 			return field
+		}
+	}
+	return nil
+}
+
+// GetFieldByColumn 获取字段根据表列数
+func (tbl *Table) GetFieldByColumn(column int) *Field {
+	if len(tbl.Fields) > column {
+		for _, field := range tbl.Fields[column:] {
+			if field.Column == column {
+				return field
+			}
 		}
 	}
 	return nil

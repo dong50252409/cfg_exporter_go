@@ -15,7 +15,7 @@ type Integer struct {
 
 var (
 	// 默认int位数
-	integerDefaultBitSizes = "32"
+	integerDefaultBitSizes = "64"
 
 	// int位数
 	intByteSizes = map[string]int{
@@ -43,12 +43,12 @@ func NewInteger(typeStr string, field *Field) (ITypeSystem, error) {
 	for k := range maps.Keys(intByteSizes) {
 		l = append(l, k)
 	}
-	return nil, ErrorTypeBaseInvalid(&Integer{}, l)
+	return nil, NewTypeErrorBaseInvalid(&Integer{}, l)
 }
 func (i *Integer) ParseString(str string) (any, error) {
 	parseInt, err := strconv.ParseInt(str, 10, i.BitSize)
 	if err != nil {
-		return nil, ErrorTypeParseFailed(i, str)
+		return nil, NewTypeErrorParseFailed(i, str)
 	}
 	return parseInt, nil
 }

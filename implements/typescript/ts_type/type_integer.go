@@ -23,3 +23,5 @@ func newInteger(typeStr string, field *entities.Field) (entities.ITypeSystem, er
 func (i *TSInteger) String() string {
 	return "number"
 }
+
+func (*TSInteger) Decorator() string { return "" }

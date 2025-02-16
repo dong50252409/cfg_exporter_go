@@ -39,13 +39,10 @@ func (r *Resource) Name() string {
 
 func (r *Resource) RunFieldDecorator(tbl *Table, field *Field) error {
 	for rowIndex, row := range tbl.DataSet {
-		v := row[field.ColIndex]
-		if v == nil || v == "" {
-			continue
-		}
-		_, err := os.Stat(filepath.Join(r.Path, v.(string)))
-		if err != nil {
-			return fmt.Errorf("第 %d 行 资源不存在 %s", rowIndex+config.Config.BodyStartRow, v)
+		if v := row[field.ColIndex]; v != nil && v != "" {
+			if _, err := os.Stat(filepath.Join(r.Path, v.(string))); err != nil {
+				return fmt.Errorf("单元格：%s 资源不存在 %s", util.ToCell(rowIndex+config.Config.BodyStartRow, field.Column), v)
+			}
 		}
 	}
 	return nil

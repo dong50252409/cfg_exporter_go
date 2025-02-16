@@ -25,6 +25,7 @@ func GetKey(typeStr string) (string, string) {
 	}
 }
 
+// SubParam 获取未解析的参数
 func SubParam(str string) string {
 	index := strings.Index(str, "(")
 	if index != -1 {
@@ -35,4 +36,9 @@ func SubParam(str string) string {
 		return str[index+1 : end]
 	}
 	return ""
+}
+
+// ToCell 将行索引和列索引转换为excel的单元格坐标,索引从0开始
+func ToCell(row int, col int) string {
+	return fmt.Sprintf("%c:%d", 'A'+col, row+1)
 }

@@ -1,7 +1,6 @@
 package json
 
 import (
-	"cfg_exporter/entities"
 	"cfg_exporter/parser"
 )
 
@@ -14,6 +13,5 @@ func init() {
 }
 
 func NewParser(p *parser.Parser) parser.IParser {
-	entities.RecoverBaseTypeRegister()
 	return &JParser{p}
 }

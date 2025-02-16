@@ -23,3 +23,5 @@ func newBoolean(typeStr string, field *entities.Field) (entities.ITypeSystem, er
 func (b *TSBoolean) String() string {
 	return "boolean"
 }
+
+func (*TSBoolean) Decorator() string { return "" }

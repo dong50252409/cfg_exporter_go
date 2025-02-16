@@ -50,10 +50,8 @@ func newRange(_ *Table, field *Field, str string) error {
 
 func (r *Range) RunFieldDecorator(tbl *Table, field *Field) error {
 	for corIndex, row := range tbl.DataSet {
-		v := row[field.Column]
-		if v != nil {
-			err := r.Equal(corIndex, row[field.Column], field.Type)
-			if err != nil {
+		if v := row[field.Column]; v != nil {
+			if err := r.Equal(corIndex, row[field.Column], field); err != nil {
 				return err
 			}
 		}
@@ -65,16 +63,16 @@ func (*Range) Name() string {
 	return "range"
 }
 
-func (r *Range) Equal(rowIndex int, v any, t ITypeSystem) error {
-	switch t.Kind() {
+func (r *Range) Equal(rowIndex int, v any, field *Field) error {
+	switch field.Type.Kind() {
 	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		if !(r.minValue.(int64) <= v.(int64) && v.(int64) <= r.maxValue.(int64)) {
-			return fmt.Errorf("第 %d 行 数值必须在%d到%d之间", rowIndex+config.Config.BodyStartRow, r.minValue, r.maxValue)
+			return fmt.Errorf("单元格：%s 数值必须在%d到%d之间", util.ToCell(rowIndex+config.Config.BodyStartRow, field.Column), r.minValue, r.maxValue)
 		}
 		return nil
 	case reflect.Float32, reflect.Float64:
 		if !(r.minValue.(float64) <= v.(float64) && v.(float64) <= r.maxValue.(float64)) {
-			return fmt.Errorf("第 %d 行 数值必须在%d到%d之间", rowIndex+config.Config.BodyStartRow, r.minValue, r.maxValue)
+			return fmt.Errorf("单元格：%s 数值必须在%d到%d之间", util.ToCell(rowIndex+config.Config.BodyStartRow, field.Column), r.minValue, r.maxValue)
 		}
 		return nil
 	default:

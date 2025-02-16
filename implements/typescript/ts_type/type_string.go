@@ -28,3 +28,5 @@ func (s *TSStr) Convert(val any) string {
 func (s *TSStr) String() string {
 	return "string"
 }
+
+func (*TSStr) Decorator() string { return "" }

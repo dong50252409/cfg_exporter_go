@@ -21,7 +21,7 @@ func NewBoolean(_ string, field *Field) (ITypeSystem, error) {
 func (b *Boolean) ParseString(str string) (any, error) {
 	parseBool, err := strconv.ParseBool(str)
 	if err != nil {
-		return nil, ErrorTypeParseFailed(b, str)
+		return nil, NewTypeErrorParseFailed(b, str)
 	}
 	return parseBool, nil
 }

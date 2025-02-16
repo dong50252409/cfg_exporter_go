@@ -25,39 +25,42 @@ func NewMap(typeStr string, field *Field) (ITypeSystem, error) {
 		if l := strings.SplitN(param, ",", 2); len(l) == 2 {
 			kT, err := NewType(l[0], field)
 			if err != nil {
-				if errors.Is(err, ErrorTypeNotSupported) {
-					return nil, ErrorTypeMapKeyInvalid(l[0])
+				if errors.Is(err, TypeErrorNotSupported) {
+					return nil, NewTypeErrorMapKeyInvalid(l[0])
 				}
 				return nil, err
 			}
 
 			vT, err := NewType(l[1], field)
 			if err != nil {
-				if errors.Is(err, ErrorTypeNotSupported) {
-					return nil, ErrorTypeMapValueInvalid(l[1])
+				if errors.Is(err, TypeErrorNotSupported) {
+					return nil, NewTypeErrorMapValueInvalid(l[1])
 				}
 				return nil, err
 			}
 			return &Map{Field: field, KeyT: kT, ValueT: vT}, nil
 		}
 	}
-	return nil, ErrorTypeMapInvalid(typeStr)
+	return nil, NewTypeErrorMapInvalid(typeStr)
 }
 
 func (m *Map) ParseString(str string) (any, error) {
+	if !(str[0] == '{' && str[len(str)-1] == '}') {
+		return nil, NewTypeErrorParseFailed(m, str)
+	}
 	v, err := ParseString(str)
 	if err != nil {
-		return nil, err
+		return nil, NewTypeErrorParseFailed(m, str)
 	}
 	if m.KeyT != nil && m.ValueT != nil {
 		keyCheckFunc := m.KeyT.CheckFunc()
 		valueCheckFunc := m.ValueT.CheckFunc()
 		for key, val := range v.(map[any]any) {
 			if !keyCheckFunc(key) {
-				return nil, ErrorTypeMapKeyNotMatch(m, key)
+				return nil, NewTypeErrorMapKeyNotMatch(m, key)
 			}
 			if !valueCheckFunc(val) {
-				return nil, ErrorTypeMapValueNotMatch(m, val)
+				return nil, NewTypeErrorMapValueNotMatch(m, val)
 			}
 		}
 	}

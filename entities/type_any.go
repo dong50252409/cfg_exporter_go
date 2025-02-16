@@ -20,7 +20,7 @@ func NewAny(_ string, field *Field) (ITypeSystem, error) {
 func (r *Any) ParseString(str string) (any, error) {
 	v, err := ParseString(str)
 	if err != nil {
-		return nil, ErrorTypeParseFailed(r, str)
+		return nil, NewTypeErrorParseFailed(r, str)
 	}
 	return v, nil
 }
