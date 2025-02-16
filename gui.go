@@ -1,9 +1,12 @@
+//go:build gui
+
 package main
 
 import (
 	"bufio"
 	"bytes"
 	"cfg_exporter/config"
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
@@ -69,10 +72,6 @@ func (e *MultiLineEntryEx) CleanText() {
 	multiLineEntryWidget.CursorRow = len(multiLineEntryWidget.Text) - 1
 }
 
-//func (e *MultiLineEntryEx) TappedSecondary(_ *fyne.PointEvent) {
-//	// 防止右键崩溃
-//}
-
 func startUI() {
 	fyneApp := app.New()
 	window := fyneApp.NewWindow("配置表导出工具")
@@ -129,7 +128,7 @@ func initSearchEntry() {
 }
 
 func searchFiles(text string) {
-
+	filenameList = make([]fileInfo, 0)
 	// 调用filepath.Walk函数遍历目录
 	err := filepath.Walk(config.Config.Source, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -138,7 +137,7 @@ func searchFiles(text string) {
 
 		// 检查是否是文件
 		if !info.IsDir() {
-			if strings.Contains(info.Name(), text) {
+			if strings.Contains(info.Name(), text) && !strings.HasPrefix(filepath.Base(path), "~$") {
 				filenameList = append(filenameList, fileInfo{fullFilename: path, filename: info.Name()})
 			}
 		}
@@ -214,9 +213,10 @@ func clientTappedFunc() {
 	if selectFilename == "" {
 		return
 	}
-	config.Config.SchemaName = "flatbuffers"
+	config.Config.SchemaName = "typescript"
 	err := run(selectFilename)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 }
@@ -228,6 +228,7 @@ func serverTappedFunc() {
 	config.Config.SchemaName = "erlang"
 	err := run(selectFilename)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 }
@@ -254,4 +255,8 @@ func initText() {
 			multiLineEntryWidget.Append(scanner.Text())
 		}
 	}()
+}
+
+func main() {
+	startUI()
 }
