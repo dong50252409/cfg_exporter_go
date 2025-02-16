@@ -213,9 +213,7 @@ func clientTappedFunc() {
 	if selectFilename == "" {
 		return
 	}
-	config.Config.SchemaName = "typescript"
-	err := run(selectFilename)
-	if err != nil {
+	if err := run(selectFilename, "typescript"); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -225,9 +223,7 @@ func serverTappedFunc() {
 	if selectFilename == "" {
 		return
 	}
-	config.Config.SchemaName = "erlang"
-	err := run(selectFilename)
-	if err != nil {
+	if err := run(selectFilename, "erlang"); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -258,5 +254,6 @@ func initText() {
 }
 
 func main() {
+	config.NewTomlConfig("config.toml")
 	startUI()
 }
